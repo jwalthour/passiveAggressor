@@ -3,7 +3,8 @@ import java.util.ArrayList;
 import java.util.Date;  
 import java.util.List;  
   
-import org.jnetpcap.Pcap;  
+import org.jnetpcap.Pcap;
+import org.jnetpcap.PcapAddr;
 import org.jnetpcap.PcapIf;  
 import org.jnetpcap.packet.PcapPacket;  
 import org.jnetpcap.packet.PcapPacketHandler;  
@@ -28,10 +29,15 @@ public class PassiveAggressor {
   
         int i = 0;  
         for (PcapIf device : alldevs) {  
+        	List<PcapAddr> addrs = device.getAddresses();
             String description =  
                 (device.getDescription() != null) ? device.getDescription()  
                     : "No description available";  
-            System.out.printf("#%d: %s [%s]\n", i++, device.getName(), description);  
+            String addrString = "";
+            if(addrs.size() > 0) {
+            	addrString = addrs.get(0).getAddr().toString();
+            }
+            System.out.printf("#%d: %s [%s] (%s) \n", i++, device.getName(), description, addrString);  
         }  
   
         PcapIf device = alldevs.get(0); // We know we have atleast 1 device  

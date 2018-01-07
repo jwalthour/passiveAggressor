@@ -8,4 +8,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="passiveAggressor.PassiveAggressor"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="passiveAggressor"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:passiveAggressor/jnetpcap-1.4.r1425}"/>
 </launchConfiguration>
