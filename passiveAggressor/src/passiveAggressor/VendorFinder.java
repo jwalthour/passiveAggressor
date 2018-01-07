@@ -30,21 +30,19 @@ public class VendorFinder {
 	    while ((line = reader.readLine()) != null) {
 		    Matcher m = regex.matcher(line);
 	    	if(m.find()) {
-//	    		System.out.println("Got a match: " + m.group(1) + ":" + m.group(2) + ":" + m.group(3) + " (" + m.group(4) + ")");
-		    	
+	    		String name = m.group(4);
 	    		int val = 0;
 	    		for(int i = 0; i < PREFIX_BYTES; ++i) {
 	    			int tempVal = Integer.parseInt(m.group(1 + i).toLowerCase(), 16); 
 	    			val += (tempVal << (8*(PREFIX_BYTES-i-1))); 
 	    		}
-	    		String name = m.group(4);
 	    		
 	    		vendorForMacPrefix.put(val, name);
 	    	}	    	
 	    }
 	}
 	
-	public String getMfrName(byte[] prefix) {
+	public static int repPrefixAsInt(byte[] prefix) {
 		int val = 0;
 		for(int i = 0; i < PREFIX_BYTES; ++i) {
 			// Java, for reasons unknown, insists on making every type signed.
@@ -54,6 +52,10 @@ public class VendorFinder {
 			if(tempVal < 0) { tempVal += 256; }
 			val += (tempVal << (8*(PREFIX_BYTES-i-1)));
 		}
-		return vendorForMacPrefix.get(val);
+		return val;
+	}
+	
+	public String getMfrName(byte[] prefix) {
+		return vendorForMacPrefix.get(repPrefixAsInt(prefix));
 	}
 }
