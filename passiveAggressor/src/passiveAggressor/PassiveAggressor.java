@@ -14,6 +14,19 @@ import org.jnetpcap.packet.PcapPacketHandler;
 public class PassiveAggressor {
 
 	public static void main(String[] args) {
+		try {
+			adapterTest();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	private static void adapterTest() throws IOException {
+        List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs  
+        StringBuilder errbuf = new StringBuilder(); // For any error msgs  
+  
 		VendorFinder vf = new VendorFinder();
 		try {
 			vf.loadOui("../data/oui.txt");
@@ -24,12 +37,10 @@ public class PassiveAggressor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	private static void adapterTest() {
-        List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs  
-        StringBuilder errbuf = new StringBuilder(); // For any error msgs  
-  
+
+		byte[] test = {-32, 67, -37};
+		System.out.println(vf.getMfrName(test));
+        
         /*************************************************************************** 
          * First get a list of devices on this system 
          **************************************************************************/  
@@ -53,7 +64,10 @@ public class PassiveAggressor {
             	addrString = addrs.get(0).getAddr().toString();
             }
 //            device.getHardwareAddress();
-            System.out.printf("#%d: %s [%s] (%s) \n", i++, device.getName(), description, addrString);  
+            String mfr = "";
+            byte[] prefix = {device.getHardwareAddress()[0],device.getHardwareAddress()[1],device.getHardwareAddress()[2]}; 
+            mfr = vf.getMfrName(prefix);
+            System.out.printf("#%d: %s (%s) [%s] (%s) \n", i++, device.getName(), mfr, description, addrString);  
         }  
   
         PcapIf device = alldevs.get(0); // We know we have atleast 1 device  
