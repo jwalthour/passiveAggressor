@@ -1,4 +1,6 @@
 package passiveAggressor;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;  
 import java.util.Date;  
 import java.util.List;  
@@ -12,6 +14,19 @@ import org.jnetpcap.packet.PcapPacketHandler;
 public class PassiveAggressor {
 
 	public static void main(String[] args) {
+		VendorFinder vf = new VendorFinder();
+		try {
+			vf.loadOui("../data/oui.txt");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static void adapterTest() {
         List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs  
         StringBuilder errbuf = new StringBuilder(); // For any error msgs  
   
@@ -37,6 +52,7 @@ public class PassiveAggressor {
             if(addrs.size() > 0) {
             	addrString = addrs.get(0).getAddr().toString();
             }
+//            device.getHardwareAddress();
             System.out.printf("#%d: %s [%s] (%s) \n", i++, device.getName(), description, addrString);  
         }  
   
@@ -60,6 +76,7 @@ public class PassiveAggressor {
                 + errbuf.toString());  
             return;  
         }  
+        
   
         /*************************************************************************** 
          * Third we create a packet handler which will receive packets from the 
