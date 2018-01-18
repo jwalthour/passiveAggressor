@@ -2,7 +2,6 @@ package passiveAggressor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;  
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;  
   
@@ -11,14 +10,8 @@ import org.jnetpcap.PcapAddr;
 import org.jnetpcap.PcapIf;  
 import org.jnetpcap.packet.PcapPacket;  
 import org.jnetpcap.packet.PcapPacketHandler;
-import org.jnetpcap.packet.structure.JField;
 import org.jnetpcap.protocol.lan.Ethernet;
-import org.jnetpcap.protocol.network.Arp;
-import org.jnetpcap.protocol.network.Icmp;
-import org.jnetpcap.protocol.network.Ip4;
-import org.jnetpcap.protocol.network.Ip6;
-import org.jnetpcap.protocol.tcpip.Tcp;
-import org.jnetpcap.protocol.tcpip.Udp;  
+import org.jnetpcap.protocol.network.Ip4;  
   
 public class PassiveAggressor {
 
