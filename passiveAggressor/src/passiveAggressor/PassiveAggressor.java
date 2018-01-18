@@ -44,7 +44,7 @@ public class PassiveAggressor {
          * First get a list of devices on this system 
          **************************************************************************/  
         int r = Pcap.findAllDevs(alldevs, errbuf);  
-        if (r == Pcap.NOT_OK || alldevs.isEmpty()) {  
+        if (r != Pcap.OK || alldevs.isEmpty()) {  
             System.err.printf("Can't read list of devices, error is %s", errbuf  
                 .toString());  
             return;  
@@ -121,18 +121,11 @@ public class PassiveAggressor {
                 
                 // Store IP address
                 int[] sourceIpAddr = null;
-                String sourceIpStr = "";
                 if(packet.hasHeader(Ip4.ID, 0)) {
                 	Ip4 ip = new Ip4();
                 	packet.getHeader(ip);
                 	sourceIpAddr = repByteArrayAsIntArray(ip.source());
-                	sourceIpStr  = repArrayAsString(sourceIpAddr, '.', false);
-//                } else if(packet.hasHeader(Ip6.ID, 0)) {
-//                	Ip6 ip = new Ip6();
-//                	packet.getHeader(ip);
-//                	sourceIpAddr = repByteArrayAsIntArray(ip.destination());
-//                	sourceIpStr  = repArrayAsString(sourceIpAddr, ':', true);
-                }
+                } // TODO: IPv6 support
                 
                 if(sourceMacAddr != null && sourceIpAddr != null) {
 //                	System.out.println("Got usable packet: " + repArrayAsString(sourceMacAddr, ':', true) + "-----" + sourceIpStr);

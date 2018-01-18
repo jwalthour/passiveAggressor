@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,18 +26,22 @@ public class VendorFinder {
 	    String pattern = "([A-Z0-9][A-Z0-9])-([A-Z0-9][A-Z0-9])-([A-Z0-9][A-Z0-9])   \\(hex\\)\t\t(.+)$";
 	    Pattern regex = Pattern.compile(pattern);
 
-	    while ((line = reader.readLine()) != null) {
-		    Matcher m = regex.matcher(line);
-	    	if(m.find()) {
-	    		String name = m.group(4);
-	    		int val = 0;
-	    		for(int i = 0; i < PREFIX_BYTES; ++i) {
-	    			int tempVal = Integer.parseInt(m.group(1 + i).toLowerCase(), 16); 
-	    			val += (tempVal << (8*(PREFIX_BYTES-i-1))); 
-	    		}
-	    		
-	    		vendorForMacPrefix.put(val, name);
-	    	}	    	
+	    try {
+		    while ((line = reader.readLine()) != null) {
+			    Matcher m = regex.matcher(line);
+		    	if(m.find()) {
+		    		String name = m.group(4);
+		    		int val = 0;
+		    		for(int i = 0; i < PREFIX_BYTES; ++i) {
+		    			int tempVal = Integer.parseInt(m.group(1 + i).toLowerCase(), 16); 
+		    			val += (tempVal << (8*(PREFIX_BYTES-i-1))); 
+		    		}
+		    		
+		    		vendorForMacPrefix.put(val, name);
+		    	}	    	
+		    }
+	    } finally {
+	    	reader.close();
 	    }
 	}
 	

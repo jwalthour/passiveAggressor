@@ -4,16 +4,16 @@
     <!--ANT 1.7 is required                                        -->
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
-    <property name="dir.workspace" value="${dir.buildfile}"/>
-    <property name="dir.jarfile" value="${dir.workspace}/bin"/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="${dir.buildfile}/bin"/>
     <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/passiveAggressor.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/../dist/passiveAggressor.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="passiveAggressor.PassiveAggressor"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="${dir.workspace}/passiveAggressor/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/passiveAggressor/jnetpcap-1.4.r1425/jnetpcap.jar"/>
+            <fileset dir="${dir.jarfile}"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/jnetpcap-1.4.r1425/jnetpcap.jar"/>
         </jar>
     </target>
 </project>
