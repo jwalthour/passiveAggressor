@@ -97,8 +97,10 @@ public class PassiveAggressor {
             return;  
         }  
         
+        long interfaceAddr = repByteArrayAsInt(device.getHardwareAddress());
+        
   
-        // Closure?
+        // Closure
         HashMap<Long, int[]> macToIpMapping = new HashMap<>();
         /*************************************************************************** 
          * Third we create a packet handler which will receive packets from the 
@@ -141,8 +143,16 @@ public class PassiveAggressor {
                 
                 if(sourceMacAddr != null && sourceIpAddr != null) {
 //                	System.out.println("Got usable packet: " + repArrayAsString(sourceMacAddr, ':', true) + "-----" + sourceIpStr);
-                	
-                	macToIpMapping.put(repIntArrayAsInt(sourceMacAddr), sourceIpAddr);
+                	long mac = repIntArrayAsInt(sourceMacAddr);
+                	if(mac != interfaceAddr) {
+	                	if(macToIpMapping.containsKey(mac)) {
+	                		// TODO: Update count
+	                	} else {
+	                		macToIpMapping.put(mac, sourceIpAddr);
+	                		System.out.println("\nKnown hosts:");
+	                		printMapping(macToIpMapping);
+	                	}
+                	}
                 }
             }  
         };  
@@ -155,10 +165,8 @@ public class PassiveAggressor {
          * the loop method exists that allows the programmer to sepecify exactly 
          * which protocol ID to use as the data link type for this pcap interface. 
          **************************************************************************/  
-        pcap.loop(10, jpacketHandler, "jNetPcap rocks!");  
+        pcap.loop(Pcap.LOOP_INFINITE, jpacketHandler, "");  
   
-        printMapping(macToIpMapping);
-        
         /*************************************************************************** 
          * Last thing to do is close the pcap handle 
          **************************************************************************/  
