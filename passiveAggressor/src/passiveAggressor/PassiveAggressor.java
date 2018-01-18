@@ -132,7 +132,7 @@ public class PassiveAggressor {
                 if(packet.hasHeader(Ip4.ID, 0)) {
                 	Ip4 ip = new Ip4();
                 	packet.getHeader(ip);
-                	sourceIpAddr = repByteArrayAsIntArray(ip.destination());
+                	sourceIpAddr = repByteArrayAsIntArray(ip.source());
                 	sourceIpStr  = repArrayAsString(sourceIpAddr, '.', false);
 //                } else if(packet.hasHeader(Ip6.ID, 0)) {
 //                	Ip6 ip = new Ip6();
@@ -145,13 +145,13 @@ public class PassiveAggressor {
 //                	System.out.println("Got usable packet: " + repArrayAsString(sourceMacAddr, ':', true) + "-----" + sourceIpStr);
                 	long mac = repIntArrayAsInt(sourceMacAddr);
                 	if(mac != interfaceAddr) {
-	                	if(macToIpMapping.containsKey(mac)) {
-	                		// TODO: Update count
-	                	} else {
+//	                	if(macToIpMapping.containsKey(mac)) {
+//	                		// TODO: Update count
+//	                	} else {
 	                		macToIpMapping.put(mac, sourceIpAddr);
 	                		System.out.println("\nKnown hosts:");
-	                		printMapping(macToIpMapping);
-	                	}
+	                		printMapping(macToIpMapping, vf);
+//	                	}
                 	}
                 }
             }  
@@ -173,14 +173,17 @@ public class PassiveAggressor {
         pcap.close();  
     }
 
-	public static void printMapping(HashMap<Long, int[]> map) {
+	public static void printMapping(HashMap<Long, int[]> map, VendorFinder vf) {
+		System.out.println("Hardware address\tIP address \tInterface manufacturer");
 		for (Long mac : map.keySet()) {
 			int[] macArr = repIntAsArray(mac, 6);
+			int prefix = getPrefixFromMac(mac);
 			int[] ipArr  = map.get(mac);
 			String macString = repArrayAsString(macArr, ':', true);
 			char sep = (ipArr.length > 4)? ':' : '.';
 			String ipString  = repArrayAsString(ipArr, sep, ipArr.length > 4);
-			System.out.println(macString + " is at " + ipString);
+			String mfrString = vf.getMfrName(prefix);
+			System.out.println(macString + "\t" + ipString + "\t" + mfrString);
 		}
 	}
 
@@ -205,12 +208,16 @@ public class PassiveAggressor {
 		}
 		return val;
 	}
+	
+	public static int getPrefixFromMac(long mac) {
+		return (int)((0xffffff000000l & mac) >> 24);
+	}
 
 	public static String repArrayAsString(int[] addr, char sep, boolean hex) {
 		
-		String ret = (hex? Integer.toHexString(addr[0]) : Integer.toString(addr[0]));
+		String ret = (hex? String.format("%02X", addr[0]) : Integer.toString(addr[0]));
 		for(int i = 1; i < addr.length; ++i) {
-			ret += sep + (hex? Integer.toHexString(addr[i]) : Integer.toString(addr[i]));
+			ret += sep + (hex? String.format("%02X", addr[i]) : Integer.toString(addr[i]));
 		}
 		return ret;
 	}
