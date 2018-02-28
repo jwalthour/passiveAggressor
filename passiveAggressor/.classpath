@@ -5,6 +5,6 @@
 	<classpathentry kind="lib" path="jnetpcap-1.4.r1425/jnetpcap.jar"/>
 	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4-sources.jar"/>
-	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4.jar"/>
+	<classpathentry kind="lib" path="commons-cli-1.4/commons-cli-1.4.jar" sourcepath="commons-cli-1.4/commons-cli-1.4-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

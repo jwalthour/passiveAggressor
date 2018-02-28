@@ -27,6 +27,9 @@ public class PassiveAggressor {
 		Option mfrOfInterestOpt = new Option("m", "mfr", true, "Manufacturer of interest");
 		mfrOfInterestOpt.setRequired(false);
 		cmdLineOpts.addOption(mfrOfInterestOpt);
+		Option ouiPathOpt = new Option("o", "oui", true, "Path to OUI file");
+		ouiPathOpt.setRequired(false);
+		cmdLineOpts.addOption(ouiPathOpt);
 		
 
         CommandLineParser parser = new DefaultParser();
@@ -43,11 +46,22 @@ public class PassiveAggressor {
             return;
         }
 
+        String captureDeviceIndexStr = cmd.getOptionValue(captureDevOpt.getLongOpt());
+        int captureDeviceIndex = 0;
+        try {
+        	captureDeviceIndex = Integer.parseInt(captureDeviceIndexStr);
+        	if(captureDeviceIndex < 0 ) {
+        		throw new NumberFormatException();
+        	}
+        } catch (NumberFormatException e) {
+        	System.out.println("Can't parse the provided device number.  Please provide an integer greater than or equal to 0.");
+        }
+        
         PassiveAggressor pa = new PassiveAggressor();
         pa.loadOui("../data/oui.txt");
 		
 		try {
-			pa.listen(1);
+			pa.listen(captureDeviceIndex);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -132,9 +146,8 @@ public class PassiveAggressor {
             System.out.printf("#%d: %s (%s) [%s] (%s) \n", i++, device.getName(), mfr, description, addrString);  
         }  
   
-        PcapIf device = alldevs.get(0); // We know we have atleast 1 device  
-        System.out  
-            .printf("\nChoosing '%s' on your behalf:\n",  
+        PcapIf device = alldevs.get(interfaceIndex);
+        System.out.printf("\nListening passively on '%s'.:\n",  
                 (device.getDescription() != null) ? device.getDescription()  
                     : device.getName());  
   
