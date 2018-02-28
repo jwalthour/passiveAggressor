@@ -13,11 +13,41 @@ import org.jnetpcap.packet.PcapPacketHandler;
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Ip4;  
   
+import org.apache.commons.cli.*;
+
 public class PassiveAggressor {
 
+	VendorFinder vf;
+	
 	public static void main(String[] args) {
+		Options cmdLineOpts = new Options();
+		Option captureDevOpt = new Option("d", "device", true, "Index of interface to monitor");
+		captureDevOpt.setRequired(true);
+		cmdLineOpts.addOption(captureDevOpt);
+		Option mfrOfInterestOpt = new Option("m", "mfr", true, "Manufacturer of interest");
+		mfrOfInterestOpt.setRequired(false);
+		cmdLineOpts.addOption(mfrOfInterestOpt);
+		
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
+
+        try {
+            cmd = parser.parse(cmdLineOpts, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("passiveAggressor", cmdLineOpts);
+
+            System.exit(1);
+            return;
+        }
+
+        PassiveAggressor pa = new PassiveAggressor();
+        pa.loadOui("../data/oui.txt");
+		
 		try {
-			adapterTest();
+			pa.listen(1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -25,13 +55,41 @@ public class PassiveAggressor {
 
 	}
 	
-	private static void adapterTest() throws IOException {
+	public void printListOfAdapters() throws IOException {
         List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs  
         StringBuilder errbuf = new StringBuilder(); // For any error msgs  
+        int r = Pcap.findAllDevs(alldevs, errbuf);  
+        if (r != Pcap.OK || alldevs.isEmpty()) {  
+            System.err.printf("Discovered no devices; error is %s", errbuf  
+                .toString());  
+            return;  
+        }  
   
-		VendorFinder vf = new VendorFinder();
+        System.out.println("Network devices found:");  
+  
+        int i = 0;  
+        for (PcapIf device : alldevs) {  
+        	List<PcapAddr> addrs = device.getAddresses();
+            String description =  
+                (device.getDescription() != null) ? device.getDescription()  
+                    : "No description available";  
+            String addrString = "";
+            if(addrs.size() > 0) {
+            	addrString = addrs.get(0).getAddr().toString();
+            }
+//            device.getHardwareAddress();
+            String mfr = "";
+            byte[] prefix = {device.getHardwareAddress()[0],device.getHardwareAddress()[1],device.getHardwareAddress()[2]}; 
+            mfr = vf.getMfrName(prefix);
+            System.out.printf("#%d: %s (%s) [%s] (%s) \n", i++, device.getName(), (mfr != null? mfr : "Unknown manufacturer"), description, addrString);  
+        }  
+        
+	}
+	
+	public void loadOui(String filepath) {
+		vf = new VendorFinder();
 		try {
-			vf.loadOui("../data/oui.txt");
+			vf.loadOui(filepath);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -39,6 +97,11 @@ public class PassiveAggressor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void listen(int interfaceIndex) throws IOException {
+        List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs  
+        StringBuilder errbuf = new StringBuilder(); // For any error msgs  
 
         /*************************************************************************** 
          * First get a list of devices on this system 
