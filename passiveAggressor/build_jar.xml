@@ -5,15 +5,16 @@
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
     <property name="dir.workspace" value="${dir.buildfile}/.."/>
-    <property name="dir.jarfile" value="${dir.buildfile}/bin"/>
+    <property name="dir.jarfile" value="${dir.buildfile}/dist"/>
     <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/../dist/passiveAggressor.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/passiveAggressor.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="passiveAggressor.PassiveAggressor"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="${dir.jarfile}"/>
+            <fileset dir="${dir.buildfile}/bin"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/jnetpcap-1.4.r1425/jnetpcap.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/commons-cli-1.4/commons-cli-1.4.jar"/>
         </jar>
     </target>
 </project>
