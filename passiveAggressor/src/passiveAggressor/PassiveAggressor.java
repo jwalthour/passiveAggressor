@@ -220,7 +220,7 @@ public class PassiveAggressor {
                 if(sourceMacAddr != null && sourceIpAddr != null) {
 //                	System.out.println("Got usable packet: " + repArrayAsString(sourceMacAddr, ':', true) + "-----" + sourceIpStr);
                 	long mac = repIntArrayAsInt(sourceMacAddr);
-                	if(mac != interfaceAddr) {
+                	if(mac != interfaceAddr && isIpV4AddrInternal(sourceIpAddr)) {
 //	                	if(macToIpMapping.containsKey(mac)) {
 //	                		// TODO: Update count
 //	                	} else {
@@ -265,6 +265,18 @@ public class PassiveAggressor {
 			String ipString  = repArrayAsString(ipArr, sep, ipArr.length > 4);
 			String mfrString = vf.getMfrName(prefix);
 			System.out.println(macString + "\t" + ipString + "\t" + mfrString);
+		}
+	}
+
+	public static boolean isIpV4AddrInternal(int[] addr) {
+		if(addr[0] == 10) {
+			return true;
+		} else if (addr[0] == 172 && ((addr[1] & 240) == 16)) {
+			return true;
+		} else if (addr[0] == 192 && addr[1] == 168) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 
