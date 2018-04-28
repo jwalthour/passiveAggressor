@@ -8,8 +8,9 @@ Lists out the hosts that can be determined by passively listening to network tra
 2. Download or clone this repository
 
 # Usage
-* Run `passiveAgressor\passiveAggressor\dist\run.bat` if you're on Windows
-* Run `passiveAgressor\passiveAggressor\dist\run.sh` if you're on Linux
+* Enter the directory `passiveAgressor\passiveAggressor\dist`
+* Run `java -jar passiveAggressor.jar` to list available network interfaces
+* Run `java -jar passiveAggressor.jar -d <interface index>` to begin listening.
 
 Sample output:
 ````

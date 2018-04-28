@@ -30,7 +30,7 @@ public class PassiveAggressor {
 	public static void main(String[] args) {
 		Options cmdLineOpts = new Options();
 		Option captureDevOpt = new Option("d", "device", true, "Index of interface to monitor");
-		captureDevOpt.setRequired(true);
+		captureDevOpt.setRequired(false);
 		cmdLineOpts.addOption(captureDevOpt);
 		Option mfrOfInterestOpt = new Option("m", "mfr", true, "Manufacturer of interest");
 		mfrOfInterestOpt.setRequired(false);
@@ -46,13 +46,13 @@ public class PassiveAggressor {
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
+        PassiveAggressor pa = new PassiveAggressor();
 
         try {
             cmd = parser.parse(cmdLineOpts, args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             formatter.printHelp("passiveAggressor", cmdLineOpts);
-
             System.exit(1);
             return;
         }
@@ -66,7 +66,19 @@ public class PassiveAggressor {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+        
+        pa.loadOui("../data/oui.txt");
+		
+        if (!cmd.hasOption("d")) {
+        	System.out.println("No device index specified (-d option).  Available interfaces are: ");
+        	try {
+				pa.printListOfAdapters();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	System.exit(0);// Not really an error - users can do this to see what the interfaces are
+        }
         String captureDeviceIndexStr = cmd.getOptionValue(captureDevOpt.getLongOpt());
         int captureDeviceIndex = 0;
         try {
@@ -78,9 +90,6 @@ public class PassiveAggressor {
         	System.out.println("Can't parse the provided device number.  Please provide an integer greater than or equal to 0.");
         }
         
-        PassiveAggressor pa = new PassiveAggressor();
-        pa.loadOui("../data/oui.txt");
-		
 		try {
 			pa.listen(captureDeviceIndex);
 		} catch (IOException e) {
@@ -116,7 +125,7 @@ public class PassiveAggressor {
             String mfr = "";
             byte[] prefix = {device.getHardwareAddress()[0],device.getHardwareAddress()[1],device.getHardwareAddress()[2]}; 
             mfr = vf.getMfrName(prefix);
-            System.out.printf("#%d: %s (%s) [%s] (%s) \n", i++, device.getName(), (mfr != null? mfr : "Unknown manufacturer"), description, addrString);  
+            System.out.printf("Device %d: %s (%s) [%s] (%s) \n", i++, device.getName(), (mfr != null? mfr : "Unknown manufacturer"), description, addrString);  
         }  
         
 	}
@@ -146,25 +155,6 @@ public class PassiveAggressor {
             System.err.printf("Can't read list of devices, error is %s", errbuf  
                 .toString());  
             return;  
-        }  
-  
-        System.out.println("Network devices found:");  
-  
-        int i = 0;  
-        for (PcapIf device : alldevs) {  
-        	List<PcapAddr> addrs = device.getAddresses();
-            String description =  
-                (device.getDescription() != null) ? device.getDescription()  
-                    : "No description available";  
-            String addrString = "";
-            if(addrs.size() > 0) {
-            	addrString = addrs.get(0).getAddr().toString();
-            }
-//            device.getHardwareAddress();
-            String mfr = "";
-            byte[] prefix = {device.getHardwareAddress()[0],device.getHardwareAddress()[1],device.getHardwareAddress()[2]}; 
-            mfr = vf.getMfrName(prefix);
-            System.out.printf("#%d: %s (%s) [%s] (%s) \n", i++, device.getName(), mfr, description, addrString);  
         }  
   
         PcapIf device = alldevs.get(interfaceIndex);
@@ -347,7 +337,6 @@ public class PassiveAggressor {
 			InputStream dllInJar = null;
 			try {
 				dllInJar = ClassLoader.getSystemClassLoader().getResourceAsStream(JAR_PATH + dllName);
-				System.out.println("Copying " + dllName);
 				Files.copy(dllInJar, Paths.get(tempPath, dllName), StandardCopyOption.REPLACE_EXISTING);
 			} finally {
 				try {

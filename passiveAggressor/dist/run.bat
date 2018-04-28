@@ -1,1 +1,1 @@
-java -Djava.library.path="..\jnetpcap-1.4.r1425" -jar passiveAggressor.jar
+java -jar passiveAggressor.jar
