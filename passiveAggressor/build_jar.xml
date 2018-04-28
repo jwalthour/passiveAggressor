@@ -6,6 +6,7 @@
     <property name="dir.buildfile" value="."/>
     <property name="dir.workspace" value="${dir.buildfile}/.."/>
     <property name="dir.jarfile" value="${dir.buildfile}/dist"/>
+	<property name="dir.resources" value="${dir.buildfile}/resources" />
     <target name="create_run_jar">
         <jar destfile="${dir.jarfile}/passiveAggressor.jar" filesetmanifest="mergewithoutmain">
             <manifest>
@@ -13,6 +14,7 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="${dir.buildfile}/bin"/>
+            <fileset dir="${dir.resources}" />
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/jnetpcap-1.4.r1425/jnetpcap.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/commons-cli-1.4/commons-cli-1.4.jar"/>
         </jar>

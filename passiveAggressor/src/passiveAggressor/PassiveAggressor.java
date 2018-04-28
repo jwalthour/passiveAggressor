@@ -1,6 +1,14 @@
 package passiveAggressor;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;  
 import java.util.HashMap;
 import java.util.List;  
@@ -27,6 +35,9 @@ public class PassiveAggressor {
 		Option mfrOfInterestOpt = new Option("m", "mfr", true, "Manufacturer of interest");
 		mfrOfInterestOpt.setRequired(false);
 		cmdLineOpts.addOption(mfrOfInterestOpt);
+		Option intervalOpt = new Option("i", "interval", true, "Seconds between outputs");
+		intervalOpt.setRequired(false);
+		cmdLineOpts.addOption(intervalOpt);
 		Option ouiPathOpt = new Option("o", "oui", true, "Path to OUI file");
 		ouiPathOpt.setRequired(false);
 		cmdLineOpts.addOption(ouiPathOpt);
@@ -45,6 +56,16 @@ public class PassiveAggressor {
             System.exit(1);
             return;
         }
+        
+        try {
+			configureDlls();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
         String captureDeviceIndexStr = cmd.getOptionValue(captureDevOpt.getLongOpt());
         int captureDeviceIndex = 0;
@@ -305,6 +326,42 @@ public class PassiveAggressor {
 			val[i] = tempVal;
 		}
 		return val;
+	}
+	
+	/**
+	 * Copies DLL files out of .jar file and drops them in the temp dir.
+	 * Then commands the system to load the DLLs.
+	 * @throws FileNotFoundException 
+	 */
+	public static void configureDlls() throws FileNotFoundException, IOException {
+		final String JAR_PATH = "dll/";
+		final String DLL_NAMES[] = {"jnetpcap.dll", "jnetpcap-pcap100.dll"}; 
+		String tempPath = System.getenv("TMP") + "/passiveAggressor/"; // tested on windows, came out to C:\Users\<user>\AppData\Local\Temp for me
+		
+		// Make folder in temp
+		File tempDir = new File(tempPath);
+		tempDir.mkdirs();
+		
+		// Copy out from jar
+		for (String dllName : DLL_NAMES) {
+			InputStream dllInJar = null;
+			try {
+				dllInJar = ClassLoader.getSystemClassLoader().getResourceAsStream(JAR_PATH + dllName);
+				System.out.println("Copying " + dllName);
+				Files.copy(dllInJar, Paths.get(tempPath, dllName), StandardCopyOption.REPLACE_EXISTING);
+			} finally {
+				try {
+					dllInJar.close();
+				} catch (Exception e) {
+					// don't care
+				}
+			}
+		}
+		
+		// Load DLLs
+		for (String dllName : DLL_NAMES) {
+			System.load(tempPath + dllName);
+		}
 	}
 	
 }
