@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.ArrayList;  
 import java.util.HashMap;
 import java.util.List;  
@@ -26,6 +27,8 @@ import org.apache.commons.cli.*;
 public class PassiveAggressor {
 
 	VendorFinder vf;
+	
+	static final int MIN_PRINT_PERIOD_S = 1;
 	
 	public static void main(String[] args) {
 		Options cmdLineOpts = new Options();
@@ -187,7 +190,7 @@ public class PassiveAggressor {
          * libpcap loop. 
          **************************************************************************/  
         PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {  
-  
+        	private Instant lastPrintTime = null;
             public void nextPacket(PcapPacket packet, String user) {  
   
 //                System.out.printf("Received packet at %s caplen=%-4d len=%-4d %s\n",  
@@ -222,11 +225,16 @@ public class PassiveAggressor {
 //	                		// TODO: Update count
 //	                	} else {
 	                		macToIpMapping.put(mac, sourceIpAddr);
-	                		System.out.println("\nKnown hosts:");
-	                		printMapping(macToIpMapping, vf);
+	                		if(lastPrintTime == null || lastPrintTime.plusSeconds(MIN_PRINT_PERIOD_S).isBefore(Instant.now())) {
+		                		System.out.println("\nKnown hosts:");
+		                		printMapping(macToIpMapping, vf);
+		                		lastPrintTime = Instant.now();
+	                		}
 //	                	}
                 	}
                 }
+                
+                
             }  
         };  
   
