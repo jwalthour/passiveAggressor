@@ -27,6 +27,7 @@ import org.apache.commons.cli.*;
 public class PassiveAggressor {
 
 	VendorFinder vf;
+	String mfrFilter = null;
 	
 	static final int MIN_PRINT_PERIOD_S = 1;
 	
@@ -35,7 +36,7 @@ public class PassiveAggressor {
 		Option captureDevOpt = new Option("d", "device", true, "Index of interface to monitor");
 		captureDevOpt.setRequired(false);
 		cmdLineOpts.addOption(captureDevOpt);
-		Option mfrOfInterestOpt = new Option("m", "mfr", true, "Manufacturer of interest");
+		Option mfrOfInterestOpt = new Option("m", "mfr", true, "Display only hosts whose manufacturer matches this string");
 		mfrOfInterestOpt.setRequired(false);
 		cmdLineOpts.addOption(mfrOfInterestOpt);
 		Option intervalOpt = new Option("i", "interval", true, "Seconds between outputs");
@@ -72,7 +73,7 @@ public class PassiveAggressor {
         
         pa.loadOui("../data/oui.txt");
 		
-        if (!cmd.hasOption("d")) {
+        if (!cmd.hasOption(captureDevOpt.getOpt())) {
         	System.out.println("No device index specified (-d option).  Available interfaces are: ");
         	try {
 				pa.printListOfAdapters();
@@ -93,6 +94,10 @@ public class PassiveAggressor {
         	System.out.println("Can't parse the provided device number.  Please provide an integer greater than or equal to 0.");
         }
         
+        if(cmd.hasOption(mfrOfInterestOpt.getOpt())) {
+        	pa.setMfrFilter(cmd.getOptionValue(mfrOfInterestOpt.getOpt()));
+        }
+        
 		try {
 			pa.listen(captureDeviceIndex);
 		} catch (IOException e) {
@@ -102,6 +107,17 @@ public class PassiveAggressor {
 
 	}
 	
+	/**
+	 * Set manufacturer filter string.
+	 * Will ignore all packets from hosts with manufacturer names that do not match this filter.
+	 * @param filter - case insensitive manufacturer name.  Filter is considered 
+	 * 	matched if the manufacturer name contains this string.  Set to null to disable filter.
+	 */
+	public void setMfrFilter(String filter) {
+		if(filter != null) { filter = filter.toLowerCase(); }
+		mfrFilter = filter;
+	}
+
 	public void printListOfAdapters() throws IOException {
         List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs  
         StringBuilder errbuf = new StringBuilder(); // For any error msgs  
@@ -185,6 +201,7 @@ public class PassiveAggressor {
   
         // Closure
         HashMap<Long, int[]> macToIpMapping = new HashMap<>();
+        
         /*************************************************************************** 
          * Third we create a packet handler which will receive packets from the 
          * libpcap loop. 
@@ -220,16 +237,25 @@ public class PassiveAggressor {
                 if(sourceMacAddr != null && sourceIpAddr != null) {
 //                	System.out.println("Got usable packet: " + repArrayAsString(sourceMacAddr, ':', true) + "-----" + sourceIpStr);
                 	long mac = repIntArrayAsInt(sourceMacAddr);
-                	if(mac != interfaceAddr && isIpV4AddrInternal(sourceIpAddr)) {
-//	                	if(macToIpMapping.containsKey(mac)) {
-//	                		// TODO: Update count
+                	boolean handleThisPacket = true; // False to ignore this one
+                	handleThisPacket = handleThisPacket && (mac != interfaceAddr && isIpV4AddrInternal(sourceIpAddr));
+                			
+            		if(mfrFilter != null) {
+            			int prefix = getPrefixFromMac(mac);
+            			String mfrString = vf.getMfrName(prefix);
+            			handleThisPacket = handleThisPacket && (mfrString.toLowerCase().contains(mfrFilter));
+            		}
+        			if(handleThisPacket) {
+//  	                if(macToIpMapping.containsKey(mac)) {
+//	                		// TODO: Update count and last time seen, after we have a host object
 //	                	} else {
-	                		macToIpMapping.put(mac, sourceIpAddr);
-	                		if(lastPrintTime == null || lastPrintTime.plusSeconds(MIN_PRINT_PERIOD_S).isBefore(Instant.now())) {
-		                		System.out.println("\nKnown hosts:");
-		                		printMapping(macToIpMapping, vf);
-		                		lastPrintTime = Instant.now();
-	                		}
+            		
+                		macToIpMapping.put(mac, sourceIpAddr);
+                		if(lastPrintTime == null || lastPrintTime.plusSeconds(MIN_PRINT_PERIOD_S).isBefore(Instant.now())) {
+	                		System.out.println("\nKnown hosts:");
+	                		printMapping(macToIpMapping, vf);
+	                		lastPrintTime = Instant.now();
+                		}
 //	                	}
                 	}
                 }
