@@ -7,22 +7,49 @@ package passiveAggressor;
 import java.util.Arrays;
 
 public class Host implements Comparable {
+	// Identity of host
 	private int[] macAddr = null;
 	private int[] ipV4Addr = null;
 	private int[] ipV6Addr = null;
+	
+	// Other metadata about host
+	private int numTimesSeen = 0;
+	// TODO: Last time seen 
 
+	/**
+	 * Constructor that sets all addresses
+	 * @param macAddr
+	 * @param ipV4Addr
+	 * @param ipV6Addr
+	 */
 	public Host(int[] macAddr, int[] ipV4Addr, int[] ipV6Addr) {
 		setMacAddr(macAddr);
 		setIpV4Addr(ipV4Addr);
 		setIpV6Addr(ipV6Addr);
 	}
 
-	public Host(int[] macAddr, int[] ipV4Addr) {
-		this(macAddr, ipV4Addr, null);
+	/**
+	 * Constructor that auto-guesses which kind of IP address was given
+	 * @param macAddr
+	 * @param ipAddr
+	 */
+	public Host(int[] macAddr, int[] ipAddr) {
+		setIpAddr(ipAddr);
+		setMacAddr(macAddr);
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public Host() {
-		this(null, null);
+		this(null, null, null);
+	}
+	
+	/**
+	 * Call this to record that a packet from this host was seen on the network
+	 */
+	public void noteSeen() {
+		numTimesSeen++;
 	}
 
 	/**
@@ -68,6 +95,18 @@ public class Host implements Comparable {
 			return ipV4Addr;
 		} else {
 			return null;
+		}
+	}
+	
+	public void setIpAddr(int[] ipAddr) {
+		if(ipAddr == null) {
+			// Do nothing
+		} else if(ipAddr.length == 4) {
+			setIpV4Addr(ipAddr);
+		} else if (ipAddr.length == 8) {
+			setIpV6Addr(ipAddr);
+		} else {
+			throw new IllegalArgumentException("ipAddr must be an array of 4 bytes or of 8 16bit integers.");
 		}
 	}
 
