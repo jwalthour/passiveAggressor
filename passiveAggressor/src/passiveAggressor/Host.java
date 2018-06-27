@@ -4,7 +4,9 @@
  */
 package passiveAggressor;
 
-public class Host {
+import java.util.Arrays;
+
+public class Host implements Comparable {
 	private int[] macAddr = null;
 	private int[] ipV4Addr = null;
 	private int[] ipV6Addr = null;
@@ -14,19 +16,19 @@ public class Host {
 		setIpV4Addr(ipV4Addr);
 		setIpV6Addr(ipV6Addr);
 	}
-	
+
 	public Host(int[] macAddr, int[] ipV4Addr) {
 		this(macAddr, ipV4Addr, null);
 	}
-	
+
 	public Host() {
 		this(null, null);
 	}
-	
+
 	/**
 	 * 
-	 * @return true if this host's IP address is reserved
-	 * 		for link-local routing, false otherwise.
+	 * @return true if this host's IP address is reserved for link-local
+	 *         routing, false otherwise.
 	 */
 	public boolean isInternal() {
 		if (ipV6Addr != null) {
@@ -46,19 +48,21 @@ public class Host {
 			throw new NullPointerException("No IP addresses set.");
 		}
 	}
-	
+
 	public int[] getMacAddr() {
 		return macAddr;
 	}
+
 	public void setMacAddr(int[] macAddr) {
 		this.macAddr = macAddr.clone();
 	}
+
 	/**
 	 * 
 	 * @return The highest-version IP address, or null.
 	 */
 	public int[] getIpAddr() {
-		if(ipV6Addr != null) {
+		if (ipV6Addr != null) {
 			return ipV6Addr;
 		} else if (ipV4Addr != null) {
 			return ipV4Addr;
@@ -66,11 +70,13 @@ public class Host {
 			return null;
 		}
 	}
+
 	public int[] getIpV4Addr() {
 		return ipV4Addr;
 	}
+
 	public void setIpV4Addr(int[] ipAddr) {
-		if(ipAddr == null) {
+		if (ipAddr == null) {
 			this.ipV4Addr = null;
 		} else {
 			if (ipAddr.length != 4) {
@@ -80,9 +86,11 @@ public class Host {
 			}
 		}
 	}
+
 	public int[] getIpV6Addr() {
 		return ipV6Addr;
 	}
+
 	public void setIpV6Addr(int[] ipAddr) {
 		if (ipAddr == null) {
 			this.ipV6Addr = null;
@@ -95,4 +103,71 @@ public class Host {
 		}
 	}
 
+	@Override
+	/**
+	 * @return true if these two hosts represent the same machine
+	 */
+	public boolean equals(Object other) {
+		if (other instanceof Host) {
+			return Arrays.equals(this.macAddr, (((Host) other).macAddr));
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	@Override
+	/**
+	 * @return a java hashcode for this machine
+	 */
+	public int hashCode() {
+		return Arrays.hashCode(macAddr);
+	}
+
+	@Override
+	public int compareTo(Object other) {
+		return compareByMac(other);
+	}
+
+	public int compareByMac(Object other) {
+		if (other instanceof Host) {
+			return compareArrays(this.macAddr, ((Host) other).macAddr);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public int compareByIp(Object other) {
+		if (other instanceof Host) {
+			return compareArrays(this.getIpAddr(), ((Host) other).getIpAddr());
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	/**
+	 * Compare two arrays of ints, for sorting.
+	 * @param a
+	 * @param b
+	 * @return 0 if arrays are equal, -1 if a should be first, 1 if b should be first.
+	 *   We say longer arrays should be later in a list, if two arrays otherwise match.
+	 */
+	public static int compareArrays(int[] a, int[] b) {
+		for (int i = 0; i < a.length; ++i) {
+			if (i >= b.length) {
+				return 1; // a is longer and they were equal
+			} else {
+				if (a[i] > b[i]) {
+					return 1;
+				} else if (a[i] > b[i]) {
+					return -1;
+				}
+			}
+		}
+		// Arrays were equal up to this point
+		if (a.length == b.length) {
+			return 0; // arrays are totally equal
+		} else {
+			return -1; // b is longer
+		}
+	}
 }
