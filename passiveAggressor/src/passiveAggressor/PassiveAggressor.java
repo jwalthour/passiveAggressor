@@ -22,7 +22,7 @@ import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Ip4;
-
+import org.jnetpcap.protocol.network.Ip6;
 import org.apache.commons.cli.*;
 
 public class PassiveAggressor {
@@ -127,7 +127,8 @@ public class PassiveAggressor {
 	}
 
 	public void printListOfAdapters() throws IOException {
-        List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with NICs  
+		List<PcapIf> alldevs = new ArrayList<PcapIf>(); // Will be filled with
+														// NICs
 		StringBuilder errbuf = new StringBuilder(); // For any error msgs
 		int r = Pcap.findAllDevs(alldevs, errbuf);
 		if (r != Pcap.OK || alldevs.isEmpty()) {
@@ -216,23 +217,13 @@ public class PassiveAggressor {
 
 			public void nextPacket(PcapPacket packet, String user) {
 
-				// System.out.printf("Received packet at %s caplen=%-4d len=%-4d
-				// %s\n",
-				// new Date(packet.getCaptureHeader().timestampInMillis()),
-				// packet.getCaptureHeader().caplen(), // Length actually
-				// captured
-				// packet.getCaptureHeader().wirelen(), // Original length
-				// user // User supplied object
-				// );
-
 				// Store hardware address
 				int[] sourceMacAddr = null;
 				if (packet.hasHeader(Ethernet.ID)) {
 					Ethernet eth = new Ethernet();
 					packet.getHeader(eth);
 					sourceMacAddr = Conversions.repByteArrayAsIntArray(eth.source());
-				} // TODO: What the heck does jnetcap call 802.11? Answer: WiFi
-					// is counted as ethernet
+				} 
 
 				// Store IP address
 				int[] sourceIpAddr = null;
@@ -240,15 +231,19 @@ public class PassiveAggressor {
 					Ip4 ip = new Ip4();
 					packet.getHeader(ip);
 					sourceIpAddr = Conversions.repByteArrayAsIntArray(ip.source());
-				} // TODO: IPv6 support
+				}
+
+				if (packet.hasHeader(Ip6.ID, 0)) {
+					Ip6 ip = new Ip6();
+					packet.getHeader(ip);
+					sourceIpAddr = Conversions.repByteArrayAsIntArray(ip.source());
+				}
 
 				if (sourceMacAddr != null && sourceIpAddr != null) {
-					// System.out.println("Got usable packet: " +
-					// repArrayAsString(sourceMacAddr, ':', true) + "-----" +
-					// sourceIpStr);
+
 					long mac = Conversions.repIntArrayAsInt(sourceMacAddr);
 					boolean handleThisPacket = true; // False to ignore this one
-					handleThisPacket = handleThisPacket && (mac != interfaceAddr && isIpV4AddrInternal(sourceIpAddr));
+					handleThisPacket = handleThisPacket && (mac != interfaceAddr);
 
 					if (mfrFilter != null) {
 						int prefix = Conversions.getPrefixFromMac(mac);
@@ -256,21 +251,13 @@ public class PassiveAggressor {
 						handleThisPacket = handleThisPacket && (mfrString.toLowerCase().contains(mfrFilter));
 					}
 					if (handleThisPacket) {
-						// if(macToIpMapping.containsKey(mac)) {
-						// // TODO: Update count and last time seen, after we
-						// have a host object
-						// } else {
-
-						// macToIpMapping.put(mac, sourceIpAddr);
 						hosts.noteHost(sourceMacAddr, sourceIpAddr);
 						if (lastPrintTime == null
 								|| lastPrintTime.plusSeconds(MIN_PRINT_PERIOD_S).isBefore(Instant.now())) {
 							System.out.println("\nKnown hosts:");
-							// printMapping(macToIpMapping, vf);
 							hosts.printMapping(System.out);
 							lastPrintTime = Instant.now();
 						}
-						// }
 					}
 				}
 
@@ -294,32 +281,6 @@ public class PassiveAggressor {
 		pcap.close();
 	}
 
-	public static void printMapping(HashMap<Long, int[]> map, VendorFinder vf) {
-		System.out.println("Hardware address\tIP address \tInterface manufacturer");
-		for (Long mac : map.keySet()) {
-			int[] macArr = Conversions.repIntAsArray(mac, 6);
-			int prefix = Conversions.getPrefixFromMac(mac);
-			int[] ipArr = map.get(mac);
-			String macString = Conversions.repArrayAsString(macArr, ':', true);
-			char sep = (ipArr.length > 4) ? ':' : '.';
-			String ipString = Conversions.repArrayAsString(ipArr, sep, ipArr.length > 4);
-			String mfrString = vf.getMfrName(prefix);
-			System.out.println(macString + "\t" + ipString + "\t" + mfrString);
-		}
-	}
-
-	public static boolean isIpV4AddrInternal(int[] addr) {
-		if (addr[0] == 10) {
-			return true;
-		} else if (addr[0] == 172 && ((addr[1] & 240) == 16)) {
-			return true;
-		} else if (addr[0] == 192 && addr[1] == 168) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	/**
 	 * Copies DLL files out of .jar file and drops them in the temp dir. Then
 	 * commands the system to load the DLLs.
@@ -329,15 +290,8 @@ public class PassiveAggressor {
 	public static void configureDlls() throws FileNotFoundException, IOException {
 		final String JAR_PATH = "dll/";
 		final String DLL_NAMES[] = { "jnetpcap.dll", "jnetpcap-pcap100.dll" };
-		String tempPath = System.getenv("TMP") + "/passiveAggressor/"; // tested
-																		// on
-																		// windows,
-																		// came
-																		// out
-																		// to
-																		// C:\Users\<user>\AppData\Local\Temp
-																		// for
-																		// me
+		String tempPath = System.getenv("TMP") + "/passiveAggressor/";
+		// tested on windows, came out to C:\Users\<user>\AppData\Local\Temp
 
 		// Make folder in temp
 		File tempDir = new File(tempPath);

@@ -11,16 +11,16 @@ import java.util.TreeSet;
 public class HostManager {
 	private TreeSet<Host> hosts = new TreeSet<>(); // Default sort compares by MAC address
 	private VendorFinder vf = null;
-	
+
 	public HostManager() {
-		
+
 	}
-	
+
 	public HostManager(VendorFinder vf) {
 		this();
 		this.vf = vf;
 	}
-	
+
 	/**
 	 * Update storage to indicate that a packet has been seen from this host.
 	 * @param macAddr an array of 6 bytes
@@ -29,19 +29,25 @@ public class HostManager {
 	public void noteHost(int[] macAddr, int[] ipAddr) {
 		noteHost(new Host(macAddr, ipAddr));
 	}
-	
+
 	/**
 	 * Update storage to indicate that a packet has been seen from this host.
+	 * 
 	 * @param host
 	 */
 	public void noteHost(Host host) {
-		// Check if we already have a host object matching the description
-		Host mostSimilarHost = hosts.floor(host);
-		if(mostSimilarHost != null && mostSimilarHost.equals(host)) {
-			mostSimilarHost.noteSeen();
+		if (host.isInternal()) {
+
+			// Check if we already have a host object matching the description
+			Host mostSimilarHost = hosts.floor(host);
+			if (mostSimilarHost != null && mostSimilarHost.equals(host)) {
+				mostSimilarHost.noteSeen();
+			} else {
+				// This is a new one
+				hosts.add(host);
+			}
 		} else {
-			// This is a new one
-			hosts.add(host);
+			// We don't currently handle external hosts seen here - their apparent MAC addresses won't match their indicated ones.
 		}
 	}
 
