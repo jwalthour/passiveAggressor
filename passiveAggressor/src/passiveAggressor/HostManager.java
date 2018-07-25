@@ -37,7 +37,7 @@ public class HostManager {
 	public void noteHost(Host host) {
 		// Check if we already have a host object matching the description
 		Host mostSimilarHost = hosts.floor(host);
-		if(mostSimilarHost.equals(host)) {
+		if(mostSimilarHost != null && mostSimilarHost.equals(host)) {
 			mostSimilarHost.noteSeen();
 		} else {
 			// This is a new one
