@@ -62,6 +62,11 @@ public class VendorFinder {
 		return vendorForMacPrefix.get(repPrefixAsInt(prefix));
 	}
 	
+	
+	public String getMfrName(int[] prefix) {
+		return getMfrName(new byte[] {(byte) prefix[0], (byte) prefix[1], (byte) prefix[2]});
+	}
+	
 	public String getMfrName(int prefix) {
 		return vendorForMacPrefix.get(prefix);
 	}

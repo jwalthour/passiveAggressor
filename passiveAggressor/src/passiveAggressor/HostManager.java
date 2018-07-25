@@ -5,10 +5,21 @@
  */
 package passiveAggressor;
 
+import java.io.PrintStream;
 import java.util.TreeSet;
 
 public class HostManager {
 	private TreeSet<Host> hosts = new TreeSet<>(); // Default sort compares by MAC address
+	private VendorFinder vf = null;
+	
+	public HostManager() {
+		
+	}
+	
+	public HostManager(VendorFinder vf) {
+		this();
+		this.vf = vf;
+	}
 	
 	/**
 	 * Update storage to indicate that a packet has been seen from this host.
@@ -31,6 +42,22 @@ public class HostManager {
 		} else {
 			// This is a new one
 			hosts.add(host);
+		}
+	}
+
+	public void printMapping(PrintStream stream) {
+		stream.println("Hardware address\tIP address \tInterface manufacturer");
+		for (Host host : hosts) {
+			String mfrString = "<unknown>";
+			int[] macArr = host.getMacAddr();
+			int[] ipArr = host.getIpAddr();
+			String macString = Conversions.repArrayAsString(macArr, ':', true);
+			char sep = (ipArr.length > 4) ? ':' : '.';
+			String ipString = Conversions.repArrayAsString(ipArr, sep, ipArr.length > 4);
+			if (vf != null) {
+				mfrString = vf.getMfrName(macArr);
+			}
+			System.out.println(macString + "\t" + ipString + "\t" + mfrString);
 		}
 	}
 }
