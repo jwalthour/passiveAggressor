@@ -182,23 +182,33 @@ namespace PassiveAggressor
 
                         if (host != null)
                         {
-                            // Is this from the same subnet as the interface on which it was captured?
+                            // Is this outbound from the interface on which it was captured?
                             if (!host.IntfIpV4Address.Address.EqualsAddr(host.HostIpV4Address))
                             {
-
-                                // Is this outbound from the interface on which it was captured?
-                                Hosts[host.HostMacAddress] = host;
-
-                                if (DateTime.Now > lastUpdateTime.AddSeconds(UpdateIntervalSeconds))
+                                // Is this from the same subnet as the interface on which it was captured?
+                                if (host.IntfIpV4Address.SubnetContains(host.HostIpV4Address))
                                 {
-                                    HostListChanged?.Invoke(Hosts);
-                                    lastUpdateTime = DateTime.Now;
+                                    Hosts[host.HostMacAddress] = host;
+
+                                    if (DateTime.Now > lastUpdateTime.AddSeconds(UpdateIntervalSeconds))
+                                    {
+                                        HostListChanged?.Invoke(Hosts);
+                                        lastUpdateTime = DateTime.Now;
+                                    }
+                                    else
+                                    {
+                                        //Console.WriteLine("Too soon for update");
+                                    }
                                 }
                                 else
                                 {
-                                    //Console.WriteLine("Too soon for update");
+                                    //Console.WriteLine("Outside of subnet: " + host.HostIpV4Address);
                                 }
                             }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("Same host: " + host.HostIpV4Address);
                         }
                     }
                     // An inelegant way to avoid spinlock - sleep for about 1/1000th of the update interval
