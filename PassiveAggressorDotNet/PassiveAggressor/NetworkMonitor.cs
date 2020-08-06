@@ -16,7 +16,12 @@ namespace PassiveAggressor
         /// <summary>
         /// Fire update event no more often than this
         /// </summary>
-        public double MinUpdateIntervalSeconds { get; set; } = 0.001;
+        public double MinUpdateIntervalSeconds { get; set; } = 0.1;
+
+        /// <summary>
+        /// Time we most recently fired HostListChanged
+        /// </summary>
+        private DateTime lastUpdateTime = new DateTime();
 
         /// <summary>
         /// A host detected by the Monitor
@@ -30,7 +35,7 @@ namespace PassiveAggressor
             //public PcapDotNet.Packets.IpV6.IpV6Address? IpV6Address = null;
         }
 
-        public Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host> Hosts { get; private set; } = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host>();
+        private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host> Hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host>();
 
         /// <summary>
         /// Event fired to indicate changes to HostList
@@ -138,6 +143,7 @@ namespace PassiveAggressor
             {
 
                 Packet packet;
+                // TODO: Want to return to listening super fast rather than spending time on processing after
                 PacketCommunicatorReceiveResult result = intf.Communicator.ReceivePacket(out packet);
                 //communicator.ReceiveSomePackets()
                 switch (result)
@@ -168,13 +174,20 @@ namespace PassiveAggressor
                 Host host = new Host();
                 host.HostIpV4Address = packet.Ethernet.IpV4.Source;
                 host.IntfIpV4Address = rxIntf.IpV4Address;
-                host.LastSeen = new DateTime();
+                host.LastSeen = DateTime.Now;
 
                 // TODO: mutex for thread safety
                 Hosts[packet.Ethernet.Source] = host;
 
-                // TODO: rate limiting
-                HostListChanged?.Invoke(Hosts);
+                if (DateTime.Now > lastUpdateTime.AddSeconds(MinUpdateIntervalSeconds))
+                {
+                    HostListChanged?.Invoke(Hosts);
+                    lastUpdateTime = DateTime.Now;
+                }
+                else
+                {
+                    //Console.WriteLine("Too soon for update");
+                }
             }
         }
     }
