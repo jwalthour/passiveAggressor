@@ -36,7 +36,7 @@ namespace PassiveAggressor
         /// Event fired to indicate changes to HostList
         /// </summary>
         /// <param name="hosts">The updated list of hosts</param>
-        public delegate void HostListChanged_d(List<Host> hosts);
+        public delegate void HostListChanged_d(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host> hosts);
         /// <summary>
         /// Event fired to indicate changes to Hosts list
         /// </summary>
@@ -146,20 +146,35 @@ namespace PassiveAggressor
                         // Timeout elapsed
                         break;
                     case PacketCommunicatorReceiveResult.Ok:
+                        incorporatePacket(packet, intf);
                         //Console.WriteLine(packet.Timestamp.ToString("yyyy-MM-dd hh:mm:ss.fff") + " length:" +
                         //                  packet.Length);
-                        if (packet.Ethernet.IpV4.Source.Equals(intf.IpV4Address))
-                        {
-                            Console.WriteLine("Ignoring packet; it's from us");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Saw packet from MAC " + packet.Ethernet.Source);
-                        }
                         break;
                     default:
                         throw new InvalidOperationException("The result " + result + " should never be reached here");
                 }
+            }
+        }
+
+        private void incorporatePacket(Packet packet, Interface rxIntf)
+        {
+            if (packet.Ethernet.IpV4.Source.Equals(rxIntf.IpV4Address))
+            {
+                //Console.WriteLine("Ignoring packet; it's from us");
+            }
+            else
+            {
+                //Console.WriteLine("Saw packet from MAC " + packet.Ethernet.Source);
+                Host host = new Host();
+                host.HostIpV4Address = packet.Ethernet.IpV4.Source;
+                host.IntfIpV4Address = rxIntf.IpV4Address;
+                host.LastSeen = new DateTime();
+
+                // TODO: mutex for thread safety
+                Hosts[packet.Ethernet.Source] = host;
+
+                // TODO: rate limiting
+                HostListChanged?.Invoke(Hosts);
             }
         }
     }

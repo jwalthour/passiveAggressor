@@ -24,7 +24,17 @@ namespace PassiveAggressor
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
+            nm.HostListChanged += Nm_HostListChanged;
+        }
 
+        private void Nm_HostListChanged(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> hosts)
+        {
+
+            foreach(KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> host in hosts)
+            {
+                Console.WriteLine("Host: " + host.Key + " " + host.Value.HostIpV4Address);
+            }
+            Console.WriteLine("");
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
