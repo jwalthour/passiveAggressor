@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,9 @@ namespace PassiveAggressor
         /// </summary>
         public double MinUpdateIntervalSeconds { get; set; } = 0.001;
 
+        /// <summary>
+        /// A host detected by the Monitor
+        /// </summary>
         public class Host
         {
             public DateTime LastSeen;
@@ -24,17 +28,52 @@ namespace PassiveAggressor
             public PcapDotNet.Packets.IpV6.IpV6Address? IpV6Address = null;
         }
 
-        public delegate void HostListChanged_d(List<Host> hostList);
+        public Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host> Hosts { get; private set; } = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host>();
+
+        /// <summary>
+        /// Event fired to indicate changes to HostList
+        /// </summary>
+        /// <param name="hosts">The updated list of hosts</param>
+        public delegate void HostListChanged_d(List<Host> hosts);
+        /// <summary>
+        /// Event fired to indicate changes to Hosts list
+        /// </summary>
         public event HostListChanged_d HostListChanged;
 
-        public Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host> HostList { get; private set; } = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host>();
-
-        private PacketCommunicator communicator;
-
-        public void StartListening()
+        /// <summary>
+        /// The objects used to manage one interface
+        /// </summary>
+        public class Interface
         {
+            public PacketCommunicator Communicator;
+            public LivePacketDevice Device;
+            public BackgroundWorker MonitorWorker;
+        }
 
-            // Retrieve the device list from the local machine
+        /// <summary>
+        /// Interfaces detected on this machine
+        /// Keys are device names
+        /// </summary>
+        public Dictionary<string, Interface> Interfaces { get; private set; } = new Dictionary<string, Interface>();
+
+        /// <summary>
+        /// Receive the first this many bytes of each packet
+        /// </summary>
+        private const int PACKET_RX_LEN_B = 1024;
+
+        /// <summary>
+        /// Check this often for worker cancellation
+        /// </summary>
+        private const int PACKET_RX_TIMEOUT_MS = 100;
+
+        /// <summary>
+        /// Find interfaces and open them all for listening
+        /// </summary>
+        public void InitializeInterfaces()
+        {
+            // TODO: loop through any existing interfaces and stop them
+            Interfaces.Clear();
+
             IList<LivePacketDevice> allDevices = LivePacketDevice.AllLocalMachine;
 
             if (allDevices.Count == 0)
@@ -43,47 +82,49 @@ namespace PassiveAggressor
                 return;
             }
 
-            // Print the list
-            for (int i = 0; i != allDevices.Count; ++i)
+            foreach(LivePacketDevice device in allDevices)
             {
-                LivePacketDevice device = allDevices[i];
-                Console.Write((i + 1) + ". " + device.Name);
-                if (device.Description != null)
-                    Console.WriteLine(" (" + device.Description + ")");
-                else
-                    Console.WriteLine(" (No description available)");
+                Interface intf = new Interface();
+                intf.Communicator = device.Open(PACKET_RX_LEN_B, PacketDeviceOpenAttributes.Promiscuous, PACKET_RX_TIMEOUT_MS);
+                intf.Device = device;
+                intf.MonitorWorker = new BackgroundWorker();
+                intf.MonitorWorker.DoWork += processPackets;
+                intf.MonitorWorker.WorkerSupportsCancellation = true;
+                intf.MonitorWorker.WorkerReportsProgress = false;
+                intf.MonitorWorker.RunWorkerAsync(intf);
+                Interfaces.Add(device.Name, intf);
             }
-            int devIdx = 3;
-
-            // Take the selected adapter
-            PacketDevice selectedDevice = allDevices[devIdx];
-
-            // Open the device
-            communicator =
-                selectedDevice.Open(65536,                                  // portion of the packet to capture
-                                                                            // 65536 guarantees that the whole packet will be captured on all the link layers
-                                    PacketDeviceOpenAttributes.Promiscuous, // promiscuous mode
-                                    1000);                                  // read timeout
-            Console.WriteLine("Listening on " + selectedDevice.Description + "...");
         }
 
-        public void GetTestPacket()
+        /// <summary>
+        /// Loop through packets until cancelled
+        /// </summary>
+        /// <param name="sender">Assumed to be the parent BackgroundWorker object</param>
+        /// <param name="e">Assumed to be the NetworkMonitor.Interface object being listened to</param>
+        private void processPackets(object sender, DoWorkEventArgs e)
         {
-            Packet packet;
-            PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
-            //communicator.ReceiveSomePackets()
-            switch (result)
+            BackgroundWorker worker = sender as BackgroundWorker;
+            Interface intf = e.Argument as Interface;
+
+            while (!worker.CancellationPending)
             {
-                case PacketCommunicatorReceiveResult.Timeout:
-                    // Timeout elapsed
-                    break;
-                case PacketCommunicatorReceiveResult.Ok:
-                    //Console.WriteLine(packet.Timestamp.ToString("yyyy-MM-dd hh:mm:ss.fff") + " length:" +
-                    //                  packet.Length);
-                    Console.WriteLine("Saw packet from MAC " + packet.Ethernet.Source);
-                    break;
-                default:
-                    throw new InvalidOperationException("The result " + result + " shoudl never be reached here");
+
+                Packet packet;
+                PacketCommunicatorReceiveResult result = intf.Communicator.ReceivePacket(out packet);
+                //communicator.ReceiveSomePackets()
+                switch (result)
+                {
+                    case PacketCommunicatorReceiveResult.Timeout:
+                        // Timeout elapsed
+                        break;
+                    case PacketCommunicatorReceiveResult.Ok:
+                        //Console.WriteLine(packet.Timestamp.ToString("yyyy-MM-dd hh:mm:ss.fff") + " length:" +
+                        //                  packet.Length);
+                        Console.WriteLine("Saw packet from MAC " + packet.Ethernet.Source);
+                        break;
+                    default:
+                        throw new InvalidOperationException("The result " + result + " should never be reached here");
+                }
             }
         }
     }

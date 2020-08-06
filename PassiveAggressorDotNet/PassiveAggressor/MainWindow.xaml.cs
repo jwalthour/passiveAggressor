@@ -28,12 +28,12 @@ namespace PassiveAggressor
 
         private void ButtonStart_Click(object sender, RoutedEventArgs e)
         {
-            nm.StartListening();
+            nm.InitializeInterfaces();
         }
 
         private void Button_OnePacket_Click(object sender, RoutedEventArgs e)
         {
-            nm.GetTestPacket();
+            
         }
     }
 }
