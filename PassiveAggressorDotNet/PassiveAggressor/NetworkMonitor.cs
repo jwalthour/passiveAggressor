@@ -219,9 +219,7 @@ namespace PassiveAggressor
             {
                 Console.WriteLine("Caught exception in listener thread: " + ex);
             }
-
         }
-
 
         /// <summary>
         /// Loop through packets until cancelled
@@ -236,7 +234,6 @@ namespace PassiveAggressor
             {
                 while (!worker.CancellationPending)
                 {
-
                     Packet packet;
                     // We're only listening during the below function call.  Thus, all of this thread outside of this function call should be as fast as it can be.
                     PacketCommunicatorReceiveResult result = intf.Communicator.ReceivePacket(out packet);
