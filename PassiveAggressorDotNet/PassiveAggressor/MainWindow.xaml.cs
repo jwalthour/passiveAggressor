@@ -23,12 +23,17 @@ namespace PassiveAggressor
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += MainWindow_Loaded;
 
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            nm.InitializeInterfaces();
         }
 
         private void ButtonStart_Click(object sender, RoutedEventArgs e)
         {
-            nm.InitializeInterfaces();
         }
 
         private void Button_OnePacket_Click(object sender, RoutedEventArgs e)

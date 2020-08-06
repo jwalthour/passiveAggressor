@@ -24,8 +24,10 @@ namespace PassiveAggressor
         public class Host
         {
             public DateTime LastSeen;
-            public PcapDotNet.Packets.IpV4.IpV4Address? IpV4Address = null;
-            public PcapDotNet.Packets.IpV6.IpV6Address? IpV6Address = null;
+            public PcapDotNet.Packets.IpV4.IpV4Address? HostIpV4Address = null;
+            public PcapDotNet.Packets.IpV4.IpV4Address? IntfIpV4Address = null;
+            // TODO: IPv6 support
+            //public PcapDotNet.Packets.IpV6.IpV6Address? IpV6Address = null;
         }
 
         public Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host> Hosts { get; private set; } = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Host>();
@@ -46,6 +48,7 @@ namespace PassiveAggressor
         public class Interface
         {
             public PacketCommunicator Communicator;
+            public PcapDotNet.Packets.IpV4.IpV4Address? IpV4Address = null;
             public LivePacketDevice Device;
             public BackgroundWorker MonitorWorker;
         }
@@ -82,17 +85,42 @@ namespace PassiveAggressor
                 return;
             }
 
-            foreach(LivePacketDevice device in allDevices)
+            foreach (LivePacketDevice device in allDevices)
             {
                 Interface intf = new Interface();
+                foreach (DeviceAddress addr in device.Addresses)
+                {
+                    if (addr.Address.Family == SocketAddressFamily.Internet)
+                    {
+                        // Hacky conversion
+                        string addrStr = addr.Address.ToString();
+                        intf.IpV4Address = new PcapDotNet.Packets.IpV4.IpV4Address(addrStr.Substring("Internet ".Length));
+                    }
+                    // TODO: IPv6 support
+                }
+
                 intf.Communicator = device.Open(PACKET_RX_LEN_B, PacketDeviceOpenAttributes.Promiscuous, PACKET_RX_TIMEOUT_MS);
-                intf.Device = device;
-                intf.MonitorWorker = new BackgroundWorker();
-                intf.MonitorWorker.DoWork += processPackets;
-                intf.MonitorWorker.WorkerSupportsCancellation = true;
-                intf.MonitorWorker.WorkerReportsProgress = false;
-                intf.MonitorWorker.RunWorkerAsync(intf);
-                Interfaces.Add(device.Name, intf);
+                // Filter to only IPv4 packets so we can assume they have an IP header later
+                using (BerkeleyPacketFilter filter = intf.Communicator.CreateFilter("ip"))
+                {
+                    intf.Communicator.SetFilter(filter);
+                }
+
+
+                if (intf.Communicator.DataLink.Kind != DataLinkKind.Ethernet)
+                {
+                    Console.WriteLine("This program works only on Ethernet networks; skipping interface named " + device.Name + " (" + device.Description + ")");
+                }
+                else
+                {
+                    intf.Device = device;
+                    intf.MonitorWorker = new BackgroundWorker();
+                    intf.MonitorWorker.DoWork += processPackets;
+                    intf.MonitorWorker.WorkerSupportsCancellation = true;
+                    intf.MonitorWorker.WorkerReportsProgress = false;
+                    intf.MonitorWorker.RunWorkerAsync(intf);
+                    Interfaces.Add(device.Name, intf);
+                }
             }
         }
 
@@ -120,7 +148,14 @@ namespace PassiveAggressor
                     case PacketCommunicatorReceiveResult.Ok:
                         //Console.WriteLine(packet.Timestamp.ToString("yyyy-MM-dd hh:mm:ss.fff") + " length:" +
                         //                  packet.Length);
-                        Console.WriteLine("Saw packet from MAC " + packet.Ethernet.Source);
+                        if (packet.Ethernet.IpV4.Source.Equals(intf.IpV4Address))
+                        {
+                            Console.WriteLine("Ignoring packet; it's from us");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Saw packet from MAC " + packet.Ethernet.Source);
+                        }
                         break;
                     default:
                         throw new InvalidOperationException("The result " + result + " should never be reached here");
