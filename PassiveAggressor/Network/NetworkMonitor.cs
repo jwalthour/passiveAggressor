@@ -123,27 +123,34 @@ namespace PassiveAggressor
                     }
                 }
 
-                intf.Communicator = device.Open(PACKET_RX_LEN_B, PacketDeviceOpenAttributes.Promiscuous, PACKET_RX_TIMEOUT_MS);
-                // Filter to only IPv4 packets so we can assume they have an IPv4 header later
-                using (BerkeleyPacketFilter filter = intf.Communicator.CreateFilter("ip"))
+                try
                 {
-                    intf.Communicator.SetFilter(filter);
-                }
+                    intf.Communicator = device.Open(PACKET_RX_LEN_B, PacketDeviceOpenAttributes.Promiscuous, PACKET_RX_TIMEOUT_MS);
+                    // Filter to only IPv4 packets so we can assume they have an IPv4 header later
+                    using (BerkeleyPacketFilter filter = intf.Communicator.CreateFilter("ip"))
+                    {
+                        intf.Communicator.SetFilter(filter);
+                    }
 
 
-                if (intf.Communicator.DataLink.Kind != DataLinkKind.Ethernet)
-                {
-                    Console.WriteLine("This program works only on Ethernet networks; skipping interface named " + device.Name + " (" + device.Description + ")");
+                    if (intf.Communicator.DataLink.Kind != DataLinkKind.Ethernet)
+                    {
+                        Console.WriteLine("This program works only on Ethernet networks; skipping interface named " + device.Name + " (" + device.Description + ")");
+                    }
+                    else
+                    {
+                        intf.Device = device;
+                        intf.MonitorWorker = new BackgroundWorker();
+                        intf.MonitorWorker.DoWork += processPackets;
+                        intf.MonitorWorker.WorkerSupportsCancellation = true;
+                        intf.MonitorWorker.WorkerReportsProgress = false;
+                        intf.MonitorWorker.RunWorkerAsync(intf);
+                        Interfaces.Add(device.Name, intf);
+                    }
                 }
-                else
+                catch(Exception ex)
                 {
-                    intf.Device = device;
-                    intf.MonitorWorker = new BackgroundWorker();
-                    intf.MonitorWorker.DoWork += processPackets;
-                    intf.MonitorWorker.WorkerSupportsCancellation = true;
-                    intf.MonitorWorker.WorkerReportsProgress = false;
-                    intf.MonitorWorker.RunWorkerAsync(intf);
-                    Interfaces.Add(device.Name, intf);
+                    Console.WriteLine("Failed to open interface named " + device.Name + " (" + device.Description + "): " + ex);
                 }
             }
 
