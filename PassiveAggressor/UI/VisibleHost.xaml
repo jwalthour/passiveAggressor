@@ -5,16 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PassiveAggressor.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="60" d:DesignWidth="800">
+             d:DesignHeight="60" d:DesignWidth="500">
     <Grid Background="White" Margin="4,4,4,0">
         <Image x:Name="imageMfrIcon" HorizontalAlignment="Left" Height="50" Margin="5,5,0,0" VerticalAlignment="Top" Width="50" Source="/PassiveAggressor;component/data/mfrIcons/unknownMfr.png"/>
         <Label x:Name="labelIpV4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="60,5,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelMacAddress" Content="AA:BB:CC:DD:EE" HorizontalAlignment="Left" Margin="60,26,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelMfrString" Content="Manufacturer name" Margin="161,5,10,0" VerticalAlignment="Top"/>
-        <Button x:Name="buttonHttp" Content="HTTP" HorizontalAlignment="Left" Margin="166,29,0,0" VerticalAlignment="Top" Width="44" Click="ButtonHttp_Click"/>
-        <Button x:Name="buttonHttps" Content="HTTPS" HorizontalAlignment="Left" Margin="215,29,0,0" VerticalAlignment="Top" Width="46" Click="ButtonHttps_Click"/>
-        <Button x:Name="buttonPutty" Content="PuTTY" HorizontalAlignment="Left" Margin="266,29,0,0" VerticalAlignment="Top" Width="44" Click="ButtonPutty_Click"/>
-        <Button x:Name="buttonFileZilla" Content="FileZilla" HorizontalAlignment="Left" Margin="315,29,0,0" VerticalAlignment="Top" Width="44" Click="ButtonFileZilla_Click"/>
+        <Button x:Name="buttonHttp" Content="HTTP" HorizontalAlignment="Left" Margin="238,29,0,0" VerticalAlignment="Top" Width="40" Click="ButtonHttp_Click" ToolTip="Launch default web browser to connect via HTTP to this host."/>
+        <Button x:Name="buttonHttps" Content="HTTPS" HorizontalAlignment="Left" Margin="283,29,0,0" VerticalAlignment="Top" Width="46" Click="ButtonHttps_Click" ToolTip="Launch default web browser to connect via HTTPS to this host."/>
+        <Button x:Name="buttonSsh" Content="SSH" HorizontalAlignment="Left" Margin="334,29,0,0" VerticalAlignment="Top" Width="35" Click="ButtonSsh_Click" ToolTip="Launch PuTTY to connect via SSH to this host."/>
+        <Button x:Name="buttonSftp" Content="SFTP" HorizontalAlignment="Left" Margin="374,29,0,0" VerticalAlignment="Top" Width="35" Click="ButtonSftp_Click" ToolTip="Launch FileZilla to connect via SFTP to this host.  Must have FileZilla installed at its default location: "/>
+        <Button x:Name="buttonFtp" Content="FTP" HorizontalAlignment="Left" Margin="414,29,0,0" VerticalAlignment="Top" Width="27" ToolTip="Launch FileZilla to connect via FTP to this host.  Must have FileZilla installed at its default location: " Click="ButtonFtp_Click"/>
+        <Label Content="Connect via:" HorizontalAlignment="Left" Margin="161,26,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </UserControl>

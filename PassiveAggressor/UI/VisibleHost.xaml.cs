@@ -20,10 +20,13 @@ namespace PassiveAggressor.UI
     /// </summary>
     public partial class VisibleHost : UserControl
     {
+        //TODO: this would be better if it was configurable
+        private const string FILEZILLA_PATH = "C:\\Program Files\\FileZilla FTP Client\\filezilla.exe";
         public VisibleHost()
         {
             InitializeComponent();
         }
+
         public VisibleHost(PcapDotNet.Packets.Ethernet.MacAddress mac, PcapDotNet.Packets.IpV4.IpV4Address ip)
         {
             InitializeComponent();
@@ -67,7 +70,7 @@ namespace PassiveAggressor.UI
             System.Diagnostics.Process.Start("https://" + labelIpV4Address.Content + "/");
         }
 
-        private void ButtonPutty_Click(object sender, RoutedEventArgs e)
+        private void ButtonSsh_Click(object sender, RoutedEventArgs e)
         {
             string myPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             string puttyPath = myPath + "\\tools\\putty\\putty.exe";
@@ -81,13 +84,21 @@ namespace PassiveAggressor.UI
             }
         }
 
-        private void ButtonFileZilla_Click(object sender, RoutedEventArgs e)
+        private void ButtonSftp_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: this would be better if it was configurable (eg also just plain old FTP rather than always SFTP)
-            string fzPath = "C:\\Program Files\\FileZilla FTP Client\\filezilla.exe";
+            LaunchFileZilla((string)labelIpV4Address.Content, "sftp");
+        }
+
+        private void ButtonFtp_Click(object sender, RoutedEventArgs e)
+        {
+            LaunchFileZilla((string)labelIpV4Address.Content, "sftp");
+        }
+
+        private void LaunchFileZilla(string host, string protocol)
+        {
             try
             {
-                System.Diagnostics.Process.Start(fzPath, "sftp://" + (string)labelIpV4Address.Content + " --logontype=ask");
+                System.Diagnostics.Process.Start(FILEZILLA_PATH, protocol + "://" + host + " --logontype=ask");
             }
             catch (Exception ex)
             {
