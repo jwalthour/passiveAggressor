@@ -56,5 +56,43 @@ namespace PassiveAggressor.UI
 
             return bitmap;
         }
+
+        private void ButtonHttp_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://" + labelIpV4Address.Content + "/");
+        }
+
+        private void ButtonHttps_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://" + labelIpV4Address.Content + "/");
+        }
+
+        private void ButtonPutty_Click(object sender, RoutedEventArgs e)
+        {
+            string myPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            string puttyPath = myPath + "\\tools\\putty\\putty.exe";
+            try
+            {
+                System.Diagnostics.Process.Start(puttyPath, (string)labelIpV4Address.Content);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Can't start putty: " + ex);
+            }
+        }
+
+        private void ButtonFileZilla_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: this would be better if it was configurable (eg also just plain old FTP rather than always SFTP)
+            string fzPath = "C:\\Program Files\\FileZilla FTP Client\\filezilla.exe";
+            try
+            {
+                System.Diagnostics.Process.Start(fzPath, "sftp://" + (string)labelIpV4Address.Content + " --logontype=ask");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Can't start FileZilla: " + ex);
+            }
+        }
     }
 }
