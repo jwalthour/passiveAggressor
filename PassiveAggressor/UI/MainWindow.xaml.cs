@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,32 +24,36 @@ namespace PassiveAggressor
         public MainWindow()
         {
             InitializeComponent();
+
+            Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            string semanticVersion = assemblyVersion.Major + "." + assemblyVersion.Minor + "." + assemblyVersion.Revision;
+            Title += " version " + semanticVersion;
+
             Loaded += MainWindow_Loaded;
             nm.HostListChanged += Nm_HostListChanged;
         }
 
         private void Nm_HostListChanged(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> hosts)
         {
+            // Run it on the GUI thread
+            Dispatcher.BeginInvoke(new Action(() => UpdateVisibleHostsList(hosts)));
+        }
 
-            foreach(KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> host in hosts)
+        private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> hosts)
+        {
+            stackHostList.Children.Clear();
+
+            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> host in hosts)
             {
-                Console.WriteLine("Host: " + host.Key + " " + host.Value.HostIpV4Address);
+                UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
+                stackHostList.Children.Add(hostControl);
             }
-            Console.WriteLine("");
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             nm.InitializeInterfaces();
-        }
-
-        private void ButtonStart_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void Button_OnePacket_Click(object sender, RoutedEventArgs e)
-        {
-            
+            UI.ManufacturerData.instance.LoadMfrData();
         }
     }
 }
