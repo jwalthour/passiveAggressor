@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:PassiveAggressor.UI"
              mc:Ignorable="d" 
              d:DesignHeight="60" d:DesignWidth="800">
-    <Grid Background="White" Margin="4,2">
+    <Grid Background="White" Margin="4,4,4,0">
         <Image x:Name="imageMfrIcon" HorizontalAlignment="Left" Height="50" Margin="5,5,0,0" VerticalAlignment="Top" Width="50" Source="/PassiveAggressor;component/data/mfrIcons/unknownMfr.png"/>
         <Label x:Name="labelIpV4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="60,5,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelMacAddress" Content="AA:BB:CC:DD:EE" HorizontalAlignment="Left" Margin="60,31,0,0" VerticalAlignment="Top"/>
