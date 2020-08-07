@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +24,11 @@ namespace PassiveAggressor
         public MainWindow()
         {
             InitializeComponent();
+
+            Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            string semanticVersion = assemblyVersion.Major + "." + assemblyVersion.Minor + "." + assemblyVersion.Revision;
+            Title += " version " + semanticVersion;
+
             Loaded += MainWindow_Loaded;
             nm.HostListChanged += Nm_HostListChanged;
         }
