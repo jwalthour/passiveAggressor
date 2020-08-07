@@ -80,5 +80,19 @@ namespace PassiveAggressor.UI
                 Console.WriteLine("Can't start putty: " + ex);
             }
         }
+
+        private void ButtonFileZilla_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: this would be better if it was configurable (eg also just plain old FTP rather than always SFTP)
+            string fzPath = "C:\\Program Files\\FileZilla FTP Client\\filezilla.exe";
+            try
+            {
+                System.Diagnostics.Process.Start(fzPath, "sftp://" + (string)labelIpV4Address.Content + " --logontype=ask");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Can't start FileZilla: " + ex);
+            }
+        }
     }
 }
