@@ -19,5 +19,6 @@
             </StackPanel>
         </ScrollViewer>
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="49" Width="280" TextWrapping="WrapWithOverflow">This tool will passively listen to network traffic, and list hosts detected on the local network.</TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="10,361,0,0" VerticalAlignment="Top" Height="49" Width="280" TextWrapping="WrapWithOverflow"><Run Text="All trademarks herein are © their respective owners.  Passive Agressor is © 2020 John Walthour, available under the Apache License 2.0."/></TextBlock>
     </Grid>
 </Window>
