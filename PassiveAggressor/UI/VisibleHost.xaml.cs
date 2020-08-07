@@ -56,5 +56,15 @@ namespace PassiveAggressor.UI
 
             return bitmap;
         }
+
+        private void ButtonHttp_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://" + labelIpV4Address.Content + "/");
+        }
+
+        private void ButtonHttps_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://" + labelIpV4Address.Content + "/");
+        }
     }
 }
