@@ -56,6 +56,7 @@
     <AssemblyOriginatorKeyFile>PassiveAggressor signing key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PcapDotNet.Base, Version=1.0.4.25027, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.dll</HintPath>
@@ -92,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UI\ManufacturerData.cs" />
     <Compile Include="UI\VisibleHost.xaml.cs">
       <DependentUpon>VisibleHost.xaml</DependentUpon>
     </Compile>
@@ -132,6 +134,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="data\oui.csv" />
     <None Include="PassiveAggressor signing key.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

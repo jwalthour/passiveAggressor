@@ -58,6 +58,8 @@ namespace PassiveAggressor
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             nm.InitializeInterfaces();
+            // TODO: launch in background
+            UI.ManufacturerData.instance.LoadMfrData();
         }
 
         private void ButtonStart_Click(object sender, RoutedEventArgs e)
