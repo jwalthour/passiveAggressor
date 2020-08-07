@@ -24,5 +24,12 @@ namespace PassiveAggressor.UI
         {
             InitializeComponent();
         }
+        public VisibleHost(PcapDotNet.Packets.Ethernet.MacAddress mac, PcapDotNet.Packets.IpV4.IpV4Address ip)
+        {
+            InitializeComponent();
+            labelIpV4Address.Content = ip.ToString();
+            labelMacAddress.Content = mac.ToString();
+            labelMfrString.Content = ManufacturerData.instance.GetMfrNameForMac(mac);
+        }
     }
 }

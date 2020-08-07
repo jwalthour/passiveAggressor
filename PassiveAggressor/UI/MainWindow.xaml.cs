@@ -45,11 +45,7 @@ namespace PassiveAggressor
 
             foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> host in hosts)
             {
-                UI.VisibleHost hostControl = new UI.VisibleHost();
-                hostControl.labelIpV4Address.Content = host.Value.HostIpV4Address.ToString();
-                hostControl.labelMacAddress.Content = host.Value.HostMacAddress.ToString();
-                hostControl.labelMfrString.Content = "Unknown Manufacturer";
-                //Console.WriteLine("Host: " + host.Key + " " + host.Value.HostIpV4Address);
+                UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
                 stackHostList.Children.Add(hostControl);
             }
             //Console.WriteLine("");
