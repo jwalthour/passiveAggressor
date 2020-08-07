@@ -13,7 +13,7 @@
         <Label x:Name="labelMfrString" Content="Manufacturer name" Margin="161,5,10,0" VerticalAlignment="Top"/>
         <Button x:Name="buttonHttp" Content="HTTP" HorizontalAlignment="Left" Margin="166,29,0,0" VerticalAlignment="Top" Width="44" Click="ButtonHttp_Click"/>
         <Button x:Name="buttonHttps" Content="HTTPS" HorizontalAlignment="Left" Margin="215,29,0,0" VerticalAlignment="Top" Width="46" Click="ButtonHttps_Click"/>
-        <Button x:Name="buttonPutty" Content="PuTTY" HorizontalAlignment="Left" Margin="266,29,0,0" VerticalAlignment="Top" Width="44"/>
+        <Button x:Name="buttonPutty" Content="PuTTY" HorizontalAlignment="Left" Margin="266,29,0,0" VerticalAlignment="Top" Width="44" Click="ButtonPutty_Click"/>
         <Button x:Name="buttonFileZilla" Content="FileZilla" HorizontalAlignment="Left" Margin="315,29,0,0" VerticalAlignment="Top" Width="44"/>
 
     </Grid>

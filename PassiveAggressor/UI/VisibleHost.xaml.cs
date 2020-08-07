@@ -66,5 +66,19 @@ namespace PassiveAggressor.UI
         {
             System.Diagnostics.Process.Start("https://" + labelIpV4Address.Content + "/");
         }
+
+        private void ButtonPutty_Click(object sender, RoutedEventArgs e)
+        {
+            string myPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            string puttyPath = myPath + "\\tools\\putty\\putty.exe";
+            try
+            {
+                System.Diagnostics.Process.Start(puttyPath, (string)labelIpV4Address.Content);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Can't start putty: " + ex);
+            }
+        }
     }
 }

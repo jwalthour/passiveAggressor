@@ -146,6 +146,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="tools\putty\PuTTY Licence.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\putty\putty.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\putty\sitestyle.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Resource Include="lib\PcapDotNet.Binaries.1.0.4\license.txt" />
     <EmbeddedResource Include="data\unknownMfr.png" />
     <EmbeddedResource Include="data\mfrIcons\apple.png" />
