@@ -135,6 +135,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="data\oui.csv" />
+    <EmbeddedResource Include="data\iconForMfr.csv" />
     <None Include="PassiveAggressor signing key.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -146,8 +147,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="lib\PcapDotNet.Binaries.1.0.4\license.txt" />
-    <Resource Include="data\mfrIcons\unknownMfr.png" />
-    <Content Include="data\mfrIcons\unknownMfr.svg" />
+    <EmbeddedResource Include="data\unknownMfr.png" />
+    <EmbeddedResource Include="data\mfrIcons\apple.png" />
+    <EmbeddedResource Include="data\mfrIcons\cisco.png" />
+    <Resource Include="data\mfrIcons\LICENSE.txt" />
+    <EmbeddedResource Include="data\mfrIcons\nvidia.png" />
+    <EmbeddedResource Include="data\mfrIcons\raspberry-pi.png" />
+    <EmbeddedResource Include="data\mfrIcons\tp-link.png" />
     <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.dll" />
     <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.pdb" />
     <Resource Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.xml" />
@@ -185,5 +191,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -48,23 +48,12 @@ namespace PassiveAggressor
                 UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
                 stackHostList.Children.Add(hostControl);
             }
-            //Console.WriteLine("");
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             nm.InitializeInterfaces();
-            // TODO: launch in background
             UI.ManufacturerData.instance.LoadMfrData();
-        }
-
-        private void ButtonStart_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void Button_OnePacket_Click(object sender, RoutedEventArgs e)
-        {
-            
         }
     }
 }

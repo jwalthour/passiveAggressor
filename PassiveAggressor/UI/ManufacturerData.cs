@@ -16,6 +16,9 @@ namespace PassiveAggressor.UI
         /// Download updated copies from: http://standards-oui.ieee.org/oui/oui.csv
         /// </summary>
         private const string OUI_RESOURCE_PATH = "PassiveAggressor.data.oui.csv"; 
+        private const string ICON_INDEX_PATH = "PassiveAggressor.data.iconForMfr.csv";
+        private const string UNKNOWN_MFR_ICON_RESOURCE = "PassiveAggressor.data.unknownMfr.png";
+        private const string MFR_ICON_RESOURCE_PREFIX = "PassiveAggressor.data.mfrIcons.";
 
         private static ManufacturerData _instance = null;
         /// <summary>
@@ -44,6 +47,7 @@ namespace PassiveAggressor.UI
 
 
         private Dictionary<uint, string> mfrNameForMacPrefix = null;
+        private Dictionary<string, string> iconResourceNameForMfrName = null;
 
         public bool IsDataLoaded { get { return mfrNameForMacPrefix != null; } }
 
@@ -84,7 +88,36 @@ namespace PassiveAggressor.UI
                     mfrNameForMacPrefix = mfrDict;
                 }
             }
-            
+
+            // Also load icon index
+            iconResourceNameForMfrName = new Dictionary<string, string>();
+            using (Stream iconIndexStream = assembly.GetManifestResourceStream(ICON_INDEX_PATH))
+            {
+                using (TextFieldParser parser = new TextFieldParser(iconIndexStream))
+                {
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(",");
+                    int i = 0;
+                    string[] headerRow = parser.ReadFields();
+                    const int ICON_COL_I = 1;
+                    const int MFR_NAME_COL_I = 0;
+                    if (headerRow[ICON_COL_I] != "Icon Resource Name" || headerRow[MFR_NAME_COL_I] != "Organization Name")
+                    {
+                        Console.WriteLine("Icon index CSV file not in a format we understand");
+                    }
+                    else
+                    {
+                        while (!parser.EndOfData)
+                        {
+                            string[] fields = parser.ReadFields();
+                            string mfr = fields[MFR_NAME_COL_I];
+                            string icon = fields[ICON_COL_I];
+                            iconResourceNameForMfrName[mfr] = icon;
+                        }
+                    }
+                }
+            }
+
         }
 
         /// <summary>
@@ -111,6 +144,24 @@ namespace PassiveAggressor.UI
             else
             {
                 return "Loading manufacturer data...";
+            }
+        }
+
+        /// <summary>
+        /// Return the resource name indicating a PNG file containing the icon for this manufacturer name.
+        /// Will return a sensible default icon if an icon is not available.
+        /// </summary>
+        /// <param name="mfr"></param>
+        /// <returns></returns>
+        public string GetIconResourceNameForMfr(string mfr)
+        {
+            if (iconResourceNameForMfrName.ContainsKey(mfr))
+            {
+                return MFR_ICON_RESOURCE_PREFIX + iconResourceNameForMfrName[mfr];
+            }
+            else
+            {
+                return UNKNOWN_MFR_ICON_RESOURCE;
             }
         }
     }

@@ -29,7 +29,32 @@ namespace PassiveAggressor.UI
             InitializeComponent();
             labelIpV4Address.Content = ip.ToString();
             labelMacAddress.Content = mac.ToString();
-            labelMfrString.Content = ManufacturerData.instance.GetMfrNameForMac(mac);
+            string mfrName = ManufacturerData.instance.GetMfrNameForMac(mac);
+            labelMfrString.Content = mfrName;
+            string mfrIconResource = ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
+            imageMfrIcon.Source = LoadImage(mfrIconResource);
+        }
+
+        /// <summary>
+        /// Load an image from the indicated embedded resource
+        /// </summary>
+        /// <param name="resourceName">Path to an embedded PNG resource</param>
+        /// <returns></returns>
+        private ImageSource LoadImage(string resourceName)
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            BitmapImage bitmap = new BitmapImage();
+
+            using (System.IO.Stream stream =
+                assembly.GetManifestResourceStream(resourceName))
+            {
+                bitmap.BeginInit();
+                bitmap.StreamSource = stream;
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+            }
+
+            return bitmap;
         }
     }
 }
