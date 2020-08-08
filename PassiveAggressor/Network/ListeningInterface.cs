@@ -13,11 +13,11 @@ namespace PassiveAggressor
     /// </summary>
     public class ListeningInterface
     {
-        private PacketCommunicator Communicator = null;
+        private PacketCommunicator communicator = null;
         public DeviceAddress IpV4Address { get; private set; } = null;
-        public string Description { get { return Device.Description; } }
-        private LivePacketDevice Device;
-        private BackgroundWorker MonitorWorker;
+        public string Description { get { return device.Description; } }
+        private LivePacketDevice device;
+        private BackgroundWorker monitorWorker;
 
         /// <summary>
         /// If an error was encountered, this will be populated with a human-readable message
@@ -39,17 +39,12 @@ namespace PassiveAggressor
         /// Check this often for worker cancellation
         /// </summary>
         private const int PACKET_RX_TIMEOUT_MS = 100;
-
-        /// <summary>
-        /// Intended to perform any CPU-bound work to free up the other threads to listen for packets
-        /// </summary>
-        private BackgroundWorker packetProcessorWorker;
-
+        
         public ListeningInterface(LivePacketDevice device, Queue<ObservedHost> outputQueue)
         {
-            this.Device = device;
+            this.device = device;
             this.outputQueue = outputQueue;
-            foreach (DeviceAddress addr in Device.Addresses)
+            foreach (DeviceAddress addr in this.device.Addresses)
             {
                 if (addr.Address.Family == SocketAddressFamily.Internet)
                 {
@@ -63,7 +58,7 @@ namespace PassiveAggressor
         /// </summary>
         public bool Listening
         {
-            get { return Communicator != null; }
+            get { return communicator != null; }
         }
 
         public delegate void ListeningChanged_d(bool isListeningNow);
@@ -77,7 +72,7 @@ namespace PassiveAggressor
         /// </summary>
         public void StopListening()
         {
-            packetProcessorWorker?.CancelAsync();
+            monitorWorker?.CancelAsync();
             ListeningChanged?.Invoke(false);
         }
 
@@ -90,32 +85,32 @@ namespace PassiveAggressor
 
             try
             {
-                Communicator = Device.Open(PACKET_RX_LEN_B, PacketDeviceOpenAttributes.Promiscuous, PACKET_RX_TIMEOUT_MS);
+                communicator = device.Open(PACKET_RX_LEN_B, PacketDeviceOpenAttributes.Promiscuous, PACKET_RX_TIMEOUT_MS);
                 // Filter to only IPv4 packets so we can assume they have an IPv4 header later
-                using (BerkeleyPacketFilter filter = Communicator.CreateFilter("ip"))
+                using (BerkeleyPacketFilter filter = communicator.CreateFilter("ip"))
                 {
-                    Communicator.SetFilter(filter);
+                    communicator.SetFilter(filter);
                 }
 
-                if (Communicator.DataLink.Kind != DataLinkKind.Ethernet)
+                if (communicator.DataLink.Kind != DataLinkKind.Ethernet)
                 {
                     ErrorMessage = "Not an Ethernet interface.";
-                    Console.WriteLine("This program works only on Ethernet networks; skipping interface named " + Device.Name + " (" + Device.Description + ")");
+                    Console.WriteLine("This program works only on Ethernet networks; skipping interface named " + device.Name + " (" + device.Description + ")");
                     StoppedListening();
                 }
                 else
                 {
-                    MonitorWorker = new BackgroundWorker();
-                    MonitorWorker.DoWork += processPackets;
-                    MonitorWorker.WorkerSupportsCancellation = true;
-                    MonitorWorker.WorkerReportsProgress = false;
-                    MonitorWorker.RunWorkerAsync();
+                    monitorWorker = new BackgroundWorker();
+                    monitorWorker.DoWork += processPackets;
+                    monitorWorker.WorkerSupportsCancellation = true;
+                    monitorWorker.WorkerReportsProgress = false;
+                    monitorWorker.RunWorkerAsync();
                     ListeningChanged?.Invoke(true);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to open interface named " + Device.Name + " (" + Device.Description + "): " + ex);
+                Console.WriteLine("Failed to open interface named " + device.Name + " (" + device.Description + "): " + ex);
                 ErrorMessage = "Failed to open interface: " + ex.GetType() + ".";
                 StoppedListening(); 
             }
@@ -136,7 +131,7 @@ namespace PassiveAggressor
                 {
                     Packet packet;
                     // We're only listening during the below function call.  Thus, all of this thread outside of this function call should be as fast as it can be.
-                    PacketCommunicatorReceiveResult result = Communicator.ReceivePacket(out packet);
+                    PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
                     //communicator.ReceiveSomePackets()
                     switch (result)
                     {
@@ -172,7 +167,7 @@ namespace PassiveAggressor
         /// </summary>
         private void StoppedListening()
         {
-            Communicator = null;
+            communicator = null;
             ListeningChanged?.Invoke(false);
         }
     }
