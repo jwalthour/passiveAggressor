@@ -42,7 +42,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -55,26 +55,43 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>PassiveAggressor signing key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PcapDotNet.Base, Version=1.0.4.25027, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.dll</HintPath>
+      <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="PcapDotNet.Core, Version=1.0.4.25149, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Core.dll</HintPath>
+      <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="PcapDotNet.Core.Extensions, Version=1.0.4.25151, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Core.Extensions.dll</HintPath>
+      <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="PcapDotNet.Packets, Version=1.0.4.25028, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Packets.dll</HintPath>
+      <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Ping, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Ping.4.3.0\lib\net46\System.Net.Ping.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -93,7 +110,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Network\ListeningInterface.cs" />
+    <Compile Include="Network\ObservedHost.cs" />
     <Compile Include="UI\ManufacturerData.cs" />
+    <Compile Include="UI\NetworkInterface.xaml.cs">
+      <DependentUpon>NetworkInterface.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\VisibleHost.xaml.cs">
       <DependentUpon>VisibleHost.xaml</DependentUpon>
     </Compile>
@@ -110,6 +132,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\NetworkInterface.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\VisibleHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -130,12 +156,23 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="data\mfrIcons\apple.png" />
+    <EmbeddedResource Include="data\mfrIcons\cisco.png" />
+    <EmbeddedResource Include="data\mfrIcons\dell.png" />
+    <EmbeddedResource Include="data\mfrIcons\google.png" />
+    <EmbeddedResource Include="data\mfrIcons\hp.png" />
+    <EmbeddedResource Include="data\mfrIcons\LICENSE.txt" />
+    <EmbeddedResource Include="data\mfrIcons\ni.png" />
+    <EmbeddedResource Include="data\mfrIcons\nvidia.png" />
+    <EmbeddedResource Include="data\mfrIcons\raspberry-pi.png" />
+    <EmbeddedResource Include="data\mfrIcons\tp-link.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="data\oui.csv" />
     <EmbeddedResource Include="data\iconForMfr.csv" />
+    <None Include="packages.config" />
     <None Include="PassiveAggressor signing key.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -146,6 +183,19 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="icon.ico" />
+    <EmbeddedResource Include="data\mfrIcons\acer.png" />
+    <EmbeddedResource Include="data\mfrIcons\amazon.png" />
+    <EmbeddedResource Include="data\mfrIcons\asus.png" />
+    <EmbeddedResource Include="data\mfrIcons\dlink.png" />
+    <EmbeddedResource Include="data\mfrIcons\hardkernel.png" />
+    <EmbeddedResource Include="data\mfrIcons\liteon.png" />
+    <EmbeddedResource Include="data\mfrIcons\microsoft.png" />
+    <EmbeddedResource Include="data\mfrIcons\qualcomm.png" />
+    <EmbeddedResource Include="data\mfrIcons\rosewill.png" />
+    <EmbeddedResource Include="data\mfrIcons\samsung.png" />
+    <EmbeddedResource Include="data\mfrIcons\ti.png" />
+    <EmbeddedResource Include="data\mfrIcons\realtek.png" />
     <Content Include="tools\putty\PuTTY Licence.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -157,16 +207,6 @@
     </Content>
     <Resource Include="lib\PcapDotNet.Binaries.1.0.4\license.txt" />
     <EmbeddedResource Include="data\unknownMfr.png" />
-    <EmbeddedResource Include="data\mfrIcons\apple.png" />
-    <EmbeddedResource Include="data\mfrIcons\cisco.png" />
-    <EmbeddedResource Include="data\mfrIcons\LICENSE.txt" />
-    <EmbeddedResource Include="data\mfrIcons\nvidia.png" />
-    <EmbeddedResource Include="data\mfrIcons\raspberry-pi.png" />
-    <EmbeddedResource Include="data\mfrIcons\tp-link.png" />
-    <EmbeddedResource Include="data\mfrIcons\dell.png" />
-    <EmbeddedResource Include="data\mfrIcons\google.png" />
-    <EmbeddedResource Include="data\mfrIcons\hp.png" />
-    <EmbeddedResource Include="data\mfrIcons\ni.png" />
     <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.dll" />
     <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.pdb" />
     <Resource Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Base.xml" />
