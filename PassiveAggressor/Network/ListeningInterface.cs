@@ -79,7 +79,7 @@ namespace PassiveAggressor
         /// </summary>
         private void StopListening()
         {
-            packetProcessorWorker.CancelAsync();
+            packetProcessorWorker?.CancelAsync();
         }
 
         /// <summary>

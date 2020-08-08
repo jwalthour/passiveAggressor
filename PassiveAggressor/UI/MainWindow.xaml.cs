@@ -63,16 +63,41 @@ namespace PassiveAggressor
         private void PopulateInterfaceList()
         {
             stackInterfaceList.Children.Clear();
-            foreach(var intf in nm.Interfaces)
+            List<ListeningInterface> interfaces = nm.Interfaces.Values.ToList();
+            // Put the ones with IP addresses first in the list
+            interfaces.Sort(CompareInterfacesForList);
+            foreach (ListeningInterface intf in interfaces)
             {
-                UI.NetworkInterface intfControl = new UI.NetworkInterface();
-                intfControl.labelDescription.Content = intf.Value.Description;
-                intfControl.labelIpv4Address.Content = intf.Value.IpV4Address != null? intf.Value.IpV4Address.Address.ToString() : "";
-                intfControl.textBlockErrorMessage.Text = intf.Value.ErrorMessage;
-                intfControl.checkboxListen.IsChecked = intf.Value.Listening;
-
-                stackInterfaceList.Children.Add(intfControl);
+                // If it has an IP address, start listening, else ignore it
+                intf.Listening = intf.IpV4Address != null;
+                // Only show the interfaces that started up properly
+                if (intf.ErrorMessage.Length == 0)
+                {
+                    UI.NetworkInterface intfControl = new UI.NetworkInterface(intf);
+                    stackInterfaceList.Children.Add(intfControl);
+                }
             }
+        }
+
+        /// <summary>
+        /// Used for sorting network interfaces in interface list.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>-1 to indicate a should go first, 0 to indicate sameness, 1 to indicate b should go first</returns>
+        private int CompareInterfacesForList(ListeningInterface a, ListeningInterface b)
+        {
+            if (a.IpV4Address != null && b.IpV4Address == null)
+            {
+                return -1;
+            }
+            else if (a.IpV4Address == null && b.IpV4Address != null)
+            {
+                return 1;
+            }
+
+            // Last sort criteria: description string
+            return a.Description.CompareTo(b.Description);
         }
     }
 }

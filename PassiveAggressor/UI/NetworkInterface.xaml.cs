@@ -20,9 +20,26 @@ namespace PassiveAggressor.UI
     /// </summary>
     public partial class NetworkInterface : UserControl
     {
+        private ListeningInterface intf;
+
         public NetworkInterface()
         {
             InitializeComponent();
+        }
+
+        public NetworkInterface(ListeningInterface intf)
+        {
+            this.intf = intf;
+            InitializeComponent();
+
+            labelDescription.Content = intf.Description;
+            labelIpv4Address.Content = intf.IpV4Address != null? (intf.IpV4Address.Address as PcapDotNet.Core.IpV4SocketAddress).Address.ToString() : "";
+            checkboxListen.IsChecked = intf.Listening;
+        }
+
+        private void CheckboxListen_Checked(object sender, RoutedEventArgs e)
+        {
+            intf.Listening = checkboxListen.IsChecked.Value;
         }
     }
 }

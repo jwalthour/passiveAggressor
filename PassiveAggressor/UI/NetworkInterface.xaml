@@ -7,10 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="88.902" d:DesignWidth="300">
     <Grid Background="White" Margin="4,4,4,9.8">
-        <CheckBox x:Name="checkboxListen" Content="Listen on this interface" HorizontalAlignment="Left" Margin="6,52,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <CheckBox x:Name="checkboxListen" Content="Listen on this interface" HorizontalAlignment="Left" Margin="101,28,0,0" VerticalAlignment="Top" IsChecked="True" Checked="CheckboxListen_Checked"/>
         <Label x:Name="labelDescription" Content="Description" VerticalAlignment="Top"/>
-        <Label x:Name="labelIpv4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="0,26,0,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockErrorMessage" Margin="101,31,5,0" TextWrapping="Wrap" Text="Error message" VerticalAlignment="Top" TextAlignment="Right" Foreground="Red"/>
+        <Label x:Name="labelIpv4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="0,22,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </UserControl>
