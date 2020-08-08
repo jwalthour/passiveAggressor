@@ -65,7 +65,6 @@ namespace PassiveAggressor.UI
                 {
                     parser.TextFieldType = FieldType.Delimited;
                     parser.SetDelimiters(",");
-                    int i = 0;
                     string[] headerRow = parser.ReadFields();
                     const int MAC_COL_I = 1;
                     const int MFR_NAME_COL_I = 2;
