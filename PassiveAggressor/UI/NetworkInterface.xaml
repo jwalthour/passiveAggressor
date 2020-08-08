@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PassiveAggressor.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="88.902" d:DesignWidth="300">
-    <Grid Background="White" Margin="4,4,4,9.8">
-        <CheckBox x:Name="checkboxListen" Content="Listen on this interface" HorizontalAlignment="Left" Margin="101,28,0,0" VerticalAlignment="Top" IsChecked="True" Checked="CheckboxListen_Checked"/>
+             d:DesignHeight="78.502" d:DesignWidth="300">
+    <Grid Background="White" Margin="4,4,4,0">
+        <CheckBox x:Name="checkboxListen" Content="Listen on this interface" HorizontalAlignment="Left" Margin="101,28,0,0" VerticalAlignment="Top" IsChecked="True" Checked="CheckboxListen_Checked" Unchecked="CheckboxListen_Unchecked"/>
         <Label x:Name="labelDescription" Content="Description" VerticalAlignment="Top"/>
         <Label x:Name="labelIpv4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="0,22,0,0" VerticalAlignment="Top"/>
 
