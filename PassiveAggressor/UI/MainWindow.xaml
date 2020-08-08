@@ -28,5 +28,6 @@
             </StackPanel>
         </ScrollViewer>
         <Label Content="Interfaces available:" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="10,59,0,0"/>
+        <Button x:Name="buttonClearHosts" Content="Clear list" Grid.Column="1" Margin="0,3,16,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="ButtonClearHosts_Click"/>
     </Grid>
 </Window>

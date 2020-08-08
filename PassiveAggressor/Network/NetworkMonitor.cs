@@ -148,5 +148,15 @@ namespace PassiveAggressor
                 Console.WriteLine("Caught exception in listener thread: " + ex);
             }
         }
+
+        /// <summary>
+        /// Empty out the hosts list
+        /// </summary>
+        public void ClearHostsList()
+        {
+            Hosts.Clear();
+            HostListChanged?.Invoke(Hosts);
+            lastUpdateTime = DateTime.Now;
+        }
     }
 }

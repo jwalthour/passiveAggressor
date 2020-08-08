@@ -97,5 +97,10 @@ namespace PassiveAggressor
             // Last sort criteria: description string
             return a.Description.CompareTo(b.Description);
         }
+
+        private void ButtonClearHosts_Click(object sender, RoutedEventArgs e)
+        {
+            nm.ClearHostsList();
+        }
     }
 }
