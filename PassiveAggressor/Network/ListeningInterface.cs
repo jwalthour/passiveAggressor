@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 using PcapDotNet.Core;
 using PcapDotNet.Packets;
-
+using System.Net.NetworkInformation;
 
 namespace PassiveAggressor
 {
@@ -220,7 +220,9 @@ namespace PassiveAggressor
 
             for (int i = 0; i < 100 && !worker.CancellationPending; i++)
             {
-                System.Threading.Thread.Sleep(100);
+                //System.Diagnostics.Process.Start("ping", " -n 1 -w 1 192.168.0.200");
+                Ping ping = new Ping();
+                ping.SendAsync("192.168.0.200", 1);
                 worker.ReportProgress(i);
             }
             // Self cleanup
