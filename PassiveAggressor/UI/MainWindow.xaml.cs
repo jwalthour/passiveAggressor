@@ -36,7 +36,8 @@ namespace PassiveAggressor
         private void Nm_HostListChanged(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
         {
             // Run it on the GUI thread
-            Dispatcher.BeginInvoke(new Action(() => UpdateVisibleHostsList(hosts)));
+            Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hostsShallowCopy = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>(hosts);
+            Dispatcher.BeginInvoke(new Action(() => UpdateVisibleHostsList(hostsShallowCopy)));
         }
 
         private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)

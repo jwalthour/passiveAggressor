@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 using PcapDotNet.Core;
 using PcapDotNet.Packets;
-
+using System.Net.NetworkInformation;
 
 namespace PassiveAggressor
 {
@@ -120,7 +120,7 @@ namespace PassiveAggressor
         /// Loop through packets until cancelled
         /// </summary>
         /// <param name="sender">Assumed to be the parent BackgroundWorker object</param>
-        /// <param name="e">Assumed to be the NetworkMonitor.Interface object being listened to</param>
+        /// <param name="e"></param>
         private void processPackets(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -170,6 +170,79 @@ namespace PassiveAggressor
             communicator = null;
             ListeningChanged?.Invoke(false);
         }
-    }
 
+        private BackgroundWorker pingSubnetWorker = null;
+        public bool PingSubnetInProgress {  get { return pingSubnetWorker != null; } }
+
+        /// <summary>
+        /// Start pinging every valid IP address in this interface's subnet.
+        /// Starts a background thread.
+        /// </summary>
+        public void BeginPingingSubnet(RunWorkerCompletedEventHandler completionHandler = null, ProgressChangedEventHandler progressHandler = null)
+        {
+            CancelPingingSubnet();
+            pingSubnetWorker = new BackgroundWorker();
+            pingSubnetWorker.DoWork += pingSubnetDoWork;
+            pingSubnetWorker.WorkerSupportsCancellation = true;
+            pingSubnetWorker.WorkerReportsProgress = true;
+            if (progressHandler != null)
+            {
+                pingSubnetWorker.ProgressChanged += progressHandler;
+            }
+            if(completionHandler != null)
+            {
+                pingSubnetWorker.RunWorkerCompleted += completionHandler;
+            }
+            pingSubnetWorker.RunWorkerAsync();
+        }
+        
+
+        /// <summary>
+        /// Cancel subnet ping, if in progress
+        /// </summary>
+        public void CancelPingingSubnet()
+        {
+            if(PingSubnetInProgress)
+            {
+                pingSubnetWorker.CancelAsync();
+            }
+        }
+
+        /// <summary>
+        /// Send one ping to every host on the subnet.
+        /// Should be started
+        /// </summary>
+        /// <param name="sender">Assumed to be the parent BackgroundWorker object</param>
+        /// <param name="e"></param>
+        private void pingSubnetDoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            //PcapDotNet.Packets.IpV4.IpV4Address testMask = new PcapDotNet.Packets.IpV4.IpV4Address("255.0.0.0");
+
+            //uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & testMask.ToValue();
+            //uint endAddressValue = startAddressValue + ~testMask.ToValue();
+            uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & (IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+            uint endAddressValue = startAddressValue + ~(IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+
+            uint numAddrs = endAddressValue - startAddressValue;
+
+            PcapDotNet.Packets.IpV4.IpV4Address addr;
+            string addrString = "";
+            for (uint addrValue = startAddressValue; addrValue <= endAddressValue && !worker.CancellationPending; addrValue++)
+            {
+                using (Ping ping = new Ping()) // Cuts down memory usage when pinging large subnets
+                {
+                    addr = new PcapDotNet.Packets.IpV4.IpV4Address(addrValue); // Would prefer to use using() {} but it's not supported, neither is there like a "fromValue" method
+                    addrString = addr.ToString();
+                    //Console.WriteLine("Pinging " + addrString);
+                    ping.SendAsync(addrString, 1, null);
+                    worker.ReportProgress((int)(100.0 * ((addrValue - startAddressValue) / (double)numAddrs)));
+                    //ping.SendAsyncCancel(); // takes a long time
+                }
+            }
+            // Self cleanup
+            pingSubnetWorker = null;
+        }
+    }
 }
