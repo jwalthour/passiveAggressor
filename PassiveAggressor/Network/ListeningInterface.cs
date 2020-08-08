@@ -218,12 +218,19 @@ namespace PassiveAggressor
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            for (int i = 0; i < 100 && !worker.CancellationPending; i++)
+            uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & (IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+            uint endAddressValue = startAddressValue + ~(IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+            //
+            uint numAddrs = endAddressValue - startAddressValue;
+
+            for (uint addrValue = startAddressValue; addrValue <= endAddressValue && !worker.CancellationPending; addrValue++)
             {
                 //System.Diagnostics.Process.Start("ping", " -n 1 -w 1 192.168.0.200");
                 Ping ping = new Ping();
-                ping.SendAsync("192.168.0.200", 1);
-                worker.ReportProgress(i);
+                PcapDotNet.Packets.IpV4.IpV4Address addr = new PcapDotNet.Packets.IpV4.IpV4Address(addrValue);
+                Console.WriteLine("Pinging " + addr);
+                ping.SendAsync(addr.ToString(), 1);
+                worker.ReportProgress((int)(100.0 * ((addrValue - startAddressValue) / numAddrs)));
             }
             // Self cleanup
             pingSubnetWorker = null;
