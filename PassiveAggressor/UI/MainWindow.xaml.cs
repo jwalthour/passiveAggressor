@@ -54,6 +54,25 @@ namespace PassiveAggressor
         {
             nm.InitializeInterfaces();
             UI.ManufacturerData.instance.LoadMfrData();
+            PopulateInterfaceList();
+        }
+
+        /// <summary>
+        /// Get the list of interfaces and display them
+        /// </summary>
+        private void PopulateInterfaceList()
+        {
+            stackInterfaceList.Children.Clear();
+            foreach(var intf in nm.Interfaces)
+            {
+                UI.NetworkInterface intfControl = new UI.NetworkInterface();
+                intfControl.labelDescription.Content = intf.Value.Description;
+                intfControl.labelIpv4Address.Content = intf.Value.IpV4Address != null? intf.Value.IpV4Address.Address.ToString() : "";
+                intfControl.textBlockErrorMessage.Text = intf.Value.ErrorMessage;
+                intfControl.checkboxListen.IsChecked = intf.Value.Listening;
+
+                stackInterfaceList.Children.Add(intfControl);
+            }
         }
     }
 }

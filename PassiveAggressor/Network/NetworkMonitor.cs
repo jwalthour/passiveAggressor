@@ -147,6 +147,5 @@ namespace PassiveAggressor
                 Console.WriteLine("Caught exception in listener thread: " + ex);
             }
         }
-
     }
 }

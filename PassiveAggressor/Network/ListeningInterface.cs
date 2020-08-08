@@ -15,15 +15,20 @@ namespace PassiveAggressor
     {
         private PacketCommunicator Communicator = null;
         public DeviceAddress IpV4Address { get; private set; } = null;
+        public string Description { get { return Device.Description; } }
         private LivePacketDevice Device;
         private BackgroundWorker MonitorWorker;
+
+        /// <summary>
+        /// If an error was encountered, this will be populated with a human-readable message
+        /// </summary>
+        public string ErrorMessage { get; private set; } = "";
 
         /// <summary>
         /// Reference to the shared queue being written to by all interface listeners and
         /// read by the consumer
         /// </summary>
         private Queue<ObservedHost> outputQueue;
-
 
         /// <summary>
         /// Receive the first this many bytes of each packet
@@ -46,6 +51,9 @@ namespace PassiveAggressor
             this.outputQueue = outputQueue;
         }
 
+        /// <summary>
+        /// true indicates that this interface is up and reporting host observations.
+        /// </summary>
         public bool Listening
         {
             get { return Communicator != null; }
@@ -71,7 +79,7 @@ namespace PassiveAggressor
         /// </summary>
         private void StopListening()
         {
-            // TODO
+            packetProcessorWorker.CancelAsync();
         }
 
         /// <summary>
@@ -79,6 +87,7 @@ namespace PassiveAggressor
         /// </summary>
         private void StartListening()
         {
+            ErrorMessage = "";
             foreach (DeviceAddress addr in Device.Addresses)
             {
                 if (addr.Address.Family == SocketAddressFamily.Internet)
@@ -96,9 +105,9 @@ namespace PassiveAggressor
                     Communicator.SetFilter(filter);
                 }
 
-
                 if (Communicator.DataLink.Kind != DataLinkKind.Ethernet)
                 {
+                    ErrorMessage = "Not an Ethernet interface.";
                     Console.WriteLine("This program works only on Ethernet networks; skipping interface named " + Device.Name + " (" + Device.Description + ")");
                     Communicator = null;
                 }
@@ -114,6 +123,7 @@ namespace PassiveAggressor
             catch (Exception ex)
             {
                 Console.WriteLine("Failed to open interface named " + Device.Name + " (" + Device.Description + "): " + ex);
+                ErrorMessage = "Failed to open interface: " + ex.GetType() + ".";
                 Communicator = null;
             }
         }
@@ -126,6 +136,7 @@ namespace PassiveAggressor
         private void processPackets(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
+            ErrorMessage = "";
             try
             {
                 while (!worker.CancellationPending)
@@ -155,6 +166,7 @@ namespace PassiveAggressor
             catch (Exception ex)
             {
                 Console.WriteLine("Caught exception in listener thread: " + ex);
+                ErrorMessage = "Failed to listen: " + ex.GetType() + ".";
             }
             finally
             {
