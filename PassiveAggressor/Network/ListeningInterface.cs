@@ -218,13 +218,13 @@ namespace PassiveAggressor
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            PcapDotNet.Packets.IpV4.IpV4Address testMask = new PcapDotNet.Packets.IpV4.IpV4Address("255.0.0.0");
+            //PcapDotNet.Packets.IpV4.IpV4Address testMask = new PcapDotNet.Packets.IpV4.IpV4Address("255.0.0.0");
 
-            uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & testMask.ToValue();
-            uint endAddressValue = startAddressValue + ~testMask.ToValue();
-            //uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & (IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
-            //uint endAddressValue = startAddressValue + ~(IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
-            //
+            //uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & testMask.ToValue();
+            //uint endAddressValue = startAddressValue + ~testMask.ToValue();
+            uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & (IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+            uint endAddressValue = startAddressValue + ~(IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+
             uint numAddrs = endAddressValue - startAddressValue;
 
             PcapDotNet.Packets.IpV4.IpV4Address addr;
@@ -235,7 +235,7 @@ namespace PassiveAggressor
                 {
                     addr = new PcapDotNet.Packets.IpV4.IpV4Address(addrValue); // Would prefer to use using() {} but it's not supported, neither is there like a "fromValue" method
                     addrString = addr.ToString();
-                    Console.WriteLine("Pinging " + addrString);
+                    //Console.WriteLine("Pinging " + addrString);
                     ping.SendAsync(addrString, 1, null);
                     worker.ReportProgress((int)(100.0 * ((addrValue - startAddressValue) / (double)numAddrs)));
                     //ping.SendAsyncCancel(); // takes a long time
