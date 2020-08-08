@@ -64,35 +64,27 @@ namespace PassiveAggressor
         public bool Listening
         {
             get { return Communicator != null; }
-            set
-            {
-                if (value)
-                {
-                    if (Listening)
-                    {
-                        StopListening();
-                    }
-                    StartListening();
-                }
-                else
-                {
-                    StopListening();
-                }
-            }
         }
+
+        public delegate void ListeningChanged_d(bool isListeningNow);
+        /// <summary>
+        /// Fired to indicate when this interface has begin or stopped listening
+        /// </summary>
+        public event ListeningChanged_d ListeningChanged;
 
         /// <summary>
         /// Cease listening on this interface
         /// </summary>
-        private void StopListening()
+        public void StopListening()
         {
             packetProcessorWorker?.CancelAsync();
+            ListeningChanged?.Invoke(false);
         }
 
         /// <summary>
         /// Launch a background thread to listen for packets on this interface
         /// </summary>
-        private void StartListening()
+        public void StartListening()
         {
             ErrorMessage = "";
 
@@ -109,7 +101,7 @@ namespace PassiveAggressor
                 {
                     ErrorMessage = "Not an Ethernet interface.";
                     Console.WriteLine("This program works only on Ethernet networks; skipping interface named " + Device.Name + " (" + Device.Description + ")");
-                    Communicator = null;
+                    StoppedListening();
                 }
                 else
                 {
@@ -118,13 +110,14 @@ namespace PassiveAggressor
                     MonitorWorker.WorkerSupportsCancellation = true;
                     MonitorWorker.WorkerReportsProgress = false;
                     MonitorWorker.RunWorkerAsync();
+                    ListeningChanged?.Invoke(true);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Failed to open interface named " + Device.Name + " (" + Device.Description + "): " + ex);
                 ErrorMessage = "Failed to open interface: " + ex.GetType() + ".";
-                Communicator = null;
+                StoppedListening(); 
             }
         }
 
@@ -170,8 +163,17 @@ namespace PassiveAggressor
             }
             finally
             {
-                Communicator = null;
+                StoppedListening();
             }
+        }
+
+        /// <summary>
+        /// Cleanup when we stop listening
+        /// </summary>
+        private void StoppedListening()
+        {
+            Communicator = null;
+            ListeningChanged?.Invoke(false);
         }
     }
 

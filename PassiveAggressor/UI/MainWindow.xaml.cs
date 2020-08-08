@@ -68,8 +68,6 @@ namespace PassiveAggressor
             interfaces.Sort(CompareInterfacesForList);
             foreach (ListeningInterface intf in interfaces)
             {
-                // If it has an IP address, start listening, else ignore it
-                intf.Listening = intf.IpV4Address != null;
                 // Only show the interfaces that started up properly
                 if (intf.ErrorMessage.Length == 0)
                 {

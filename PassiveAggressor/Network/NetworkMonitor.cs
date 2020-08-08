@@ -71,7 +71,8 @@ namespace PassiveAggressor
             {
                 ListeningInterface intf = new ListeningInterface(device, hostsToIncorporate);
                 Interfaces.Add(device.Name, intf);
-                intf.Listening = true;
+                // Auto start listening so any errors will appear early
+                intf.StartListening();
             }
 
             packetProcessorWorker = new BackgroundWorker();

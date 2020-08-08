@@ -33,13 +33,40 @@ namespace PassiveAggressor.UI
             InitializeComponent();
 
             labelDescription.Content = intf.Description;
-            labelIpv4Address.Content = intf.IpV4Address != null? (intf.IpV4Address.Address as PcapDotNet.Core.IpV4SocketAddress).Address.ToString() : "";
-            checkboxListen.IsChecked = intf.Listening;
+            labelIpv4Address.Content = intf.IpV4Address != null ? (intf.IpV4Address.Address as PcapDotNet.Core.IpV4SocketAddress).Address.ToString() : "";
+            UpdateListenButtonEnables(intf.Listening);
+
+            intf.ListeningChanged += Intf_ListeningChanged;
         }
 
-        private void CheckboxListen_Checked(object sender, RoutedEventArgs e)
+        private void Intf_ListeningChanged(bool isListeningNow)
         {
-            intf.Listening = checkboxListen.IsChecked.Value;
+            Dispatcher.BeginInvoke(new Action(() => UpdateListenButtonEnables(isListeningNow)));
+        }
+
+        /// <summary>
+        /// Update the enable/disable states of the Listen and Ignore buttons based 
+        /// on whether the interface is presently listening
+        /// </summary>
+        /// <param name="isListening"></param>
+        private void UpdateListenButtonEnables(bool isListening)
+        {
+            buttonListen.IsEnabled = !isListening;
+            buttonIgnore.IsEnabled = isListening;
+        }
+
+        private void ButtonListen_Click(object sender, RoutedEventArgs e)
+        {
+            // Both buttons will be disabled until the listen/ignore completes
+            buttonListen.IsEnabled = false;
+            intf.StartListening();
+        }
+
+        private void ButtonIgnore_Click(object sender, RoutedEventArgs e)
+        {
+            // Both buttons will be disabled until the listen/ignore completes
+            buttonIgnore.IsEnabled = false;
+            intf.StopListening();
         }
     }
 }
