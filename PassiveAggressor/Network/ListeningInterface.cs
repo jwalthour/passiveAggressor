@@ -218,19 +218,24 @@ namespace PassiveAggressor
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & (IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
-            uint endAddressValue = startAddressValue + ~(IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+            PcapDotNet.Packets.IpV4.IpV4Address testMask = new PcapDotNet.Packets.IpV4.IpV4Address("255.255.0.0");
+
+            uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & testMask.ToValue();
+            uint endAddressValue = startAddressValue + ~testMask.ToValue();
+            //uint startAddressValue = (IpV4Address.Address as IpV4SocketAddress).Address.ToValue() & (IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
+            //uint endAddressValue = startAddressValue + ~(IpV4Address.Netmask as IpV4SocketAddress).Address.ToValue();
             //
             uint numAddrs = endAddressValue - startAddressValue;
 
             for (uint addrValue = startAddressValue; addrValue <= endAddressValue && !worker.CancellationPending; addrValue++)
             {
-                //System.Diagnostics.Process.Start("ping", " -n 1 -w 1 192.168.0.200");
-                Ping ping = new Ping();
-                PcapDotNet.Packets.IpV4.IpV4Address addr = new PcapDotNet.Packets.IpV4.IpV4Address(addrValue);
-                Console.WriteLine("Pinging " + addr);
-                ping.SendAsync(addr.ToString(), 1);
-                worker.ReportProgress((int)(100.0 * ((addrValue - startAddressValue) / numAddrs)));
+                using (Ping ping = new Ping()) // Cuts down memory usage when pinging large subnets
+                {
+                    PcapDotNet.Packets.IpV4.IpV4Address addr = new PcapDotNet.Packets.IpV4.IpV4Address(addrValue); // Would prefer to use using() {} but it's not supported, neither is there like a "fromValue" method
+                    Console.WriteLine("Pinging " + addr);
+                    ping.SendAsync(addr.ToString(), 1);
+                    worker.ReportProgress((int)(100.0 * ((addrValue - startAddressValue) / (double)numAddrs)));
+                }
             }
             // Self cleanup
             pingSubnetWorker = null;
