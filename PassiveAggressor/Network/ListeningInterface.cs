@@ -49,6 +49,13 @@ namespace PassiveAggressor
         {
             this.Device = device;
             this.outputQueue = outputQueue;
+            foreach (DeviceAddress addr in Device.Addresses)
+            {
+                if (addr.Address.Family == SocketAddressFamily.Internet)
+                {
+                    IpV4Address = addr;
+                }
+            }
         }
 
         /// <summary>
@@ -88,13 +95,6 @@ namespace PassiveAggressor
         private void StartListening()
         {
             ErrorMessage = "";
-            foreach (DeviceAddress addr in Device.Addresses)
-            {
-                if (addr.Address.Family == SocketAddressFamily.Internet)
-                {
-                    IpV4Address = addr;
-                }
-            }
 
             try
             {
