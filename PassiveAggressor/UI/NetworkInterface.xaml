@@ -11,5 +11,8 @@
         <Label x:Name="labelIpv4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="0,22,0,0" VerticalAlignment="Top"/>
         <Button x:Name="buttonListen" Content="Listen" HorizontalAlignment="Left" Margin="6,48,0,0" VerticalAlignment="Top" Width="43" ToolTip="Begin listening on this interface.  Hosts heard on this interface will be added to the list." Click="ButtonListen_Click"/>
         <Button x:Name="buttonIgnore" Content="Ignore" HorizontalAlignment="Left" Margin="54,48,0,0" VerticalAlignment="Top" Width="43" ToolTip="Stop listening on this interface.  Hosts heard already will not be removed from the list." Click="ButtonIgnore_Click"/>
+        <Button x:Name="buttonPingSubnet" Content="Ping subnet" Margin="0,25,58,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" ToolTip="Send one ping request to each valid IP address in this subnet, which can be many.  This is an active action, not a passive one, and may draw the attention of an Intrusion Detection System, or otherwise be noticeable by its bandwidth usage." Click="ButtonPingSubnet_Click"/>
+        <Button x:Name="buttonCancelSubnetPing" Content="Cancel" Margin="0,25,5,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="48" ToolTip="Cancel subnet ping, if active" Click="ButtonCancelSubnetPing_Click" IsCancel="True" IsEnabled="False"/>
+        <ProgressBar x:Name="progressPingSweep" Height="10" Margin="0,49,5,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="128"/>
     </Grid>
 </UserControl>

@@ -120,7 +120,7 @@ namespace PassiveAggressor
         /// Loop through packets until cancelled
         /// </summary>
         /// <param name="sender">Assumed to be the parent BackgroundWorker object</param>
-        /// <param name="e">Assumed to be the NetworkMonitor.Interface object being listened to</param>
+        /// <param name="e"></param>
         private void processPackets(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -170,6 +170,61 @@ namespace PassiveAggressor
             communicator = null;
             ListeningChanged?.Invoke(false);
         }
-    }
 
+        private BackgroundWorker pingSubnetWorker = null;
+        public bool PingSubnetInProgress {  get { return pingSubnetWorker != null; } }
+
+        /// <summary>
+        /// Start pinging every valid IP address in this interface's subnet.
+        /// Starts a background thread.
+        /// </summary>
+        public void BeginPingingSubnet(RunWorkerCompletedEventHandler completionHandler = null, ProgressChangedEventHandler progressHandler = null)
+        {
+            CancelPingingSubnet();
+            pingSubnetWorker = new BackgroundWorker();
+            pingSubnetWorker.DoWork += pingSubnetDoWork;
+            pingSubnetWorker.WorkerSupportsCancellation = true;
+            pingSubnetWorker.WorkerReportsProgress = true;
+            if (progressHandler != null)
+            {
+                pingSubnetWorker.ProgressChanged += progressHandler;
+            }
+            if(completionHandler != null)
+            {
+                pingSubnetWorker.RunWorkerCompleted += completionHandler;
+            }
+            pingSubnetWorker.RunWorkerAsync();
+        }
+        
+
+        /// <summary>
+        /// Cancel subnet ping, if in progress
+        /// </summary>
+        public void CancelPingingSubnet()
+        {
+            if(PingSubnetInProgress)
+            {
+                pingSubnetWorker.CancelAsync();
+            }
+        }
+
+        /// <summary>
+        /// Send one ping to every host on the subnet.
+        /// Should be started
+        /// </summary>
+        /// <param name="sender">Assumed to be the parent BackgroundWorker object</param>
+        /// <param name="e"></param>
+        private void pingSubnetDoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            for (int i = 0; i < 100 && !worker.CancellationPending; i++)
+            {
+                System.Threading.Thread.Sleep(100);
+                worker.ReportProgress(i);
+            }
+            // Self cleanup
+            pingSubnetWorker = null;
+        }
+    }
 }

@@ -68,5 +68,38 @@ namespace PassiveAggressor.UI
             buttonIgnore.IsEnabled = false;
             intf.StopListening();
         }
+
+        private void ButtonPingSubnet_Click(object sender, RoutedEventArgs e)
+        {
+            buttonPingSubnet.IsEnabled = false;
+            buttonCancelSubnetPing.IsEnabled = true;
+            intf.BeginPingingSubnet(PingSweepCompleted, PingSweepProgress);
+        }
+
+        private void ButtonCancelSubnetPing_Click(object sender, RoutedEventArgs e)
+        {
+            intf.CancelPingingSubnet();
+        }
+
+        /// <summary>
+        /// Callled when the subnet ping stops
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PingSweepCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            buttonPingSubnet.IsEnabled = true;
+            buttonCancelSubnetPing.IsEnabled = false;
+        }
+
+        /// <summary>
+        /// Called when the subnet ping reports progress
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PingSweepProgress(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            progressPingSweep.Value = e.ProgressPercentage;
+        }
     }
 }
