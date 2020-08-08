@@ -33,17 +33,17 @@ namespace PassiveAggressor
             nm.HostListChanged += Nm_HostListChanged;
         }
 
-        private void Nm_HostListChanged(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> hosts)
+        private void Nm_HostListChanged(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
         {
             // Run it on the GUI thread
             Dispatcher.BeginInvoke(new Action(() => UpdateVisibleHostsList(hosts)));
         }
 
-        private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> hosts)
+        private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
         {
             stackHostList.Children.Clear();
 
-            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, NetworkMonitor.Host> host in hosts)
+            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> host in hosts)
             {
                 UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
                 stackHostList.Children.Add(hostControl);
