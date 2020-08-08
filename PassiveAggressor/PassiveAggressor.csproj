@@ -55,6 +55,9 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>PassiveAggressor signing key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PcapDotNet.Base, Version=1.0.4.25027, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
@@ -170,6 +173,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="icon.ico" />
     <Content Include="tools\putty\PuTTY Licence.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
