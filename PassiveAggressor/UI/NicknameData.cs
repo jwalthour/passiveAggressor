@@ -1,0 +1,144 @@
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PassiveAggressor.UI
+{
+    class NicknameData
+    {
+        /// <summary>
+        /// File path (relative to executing binary) for nicknames CSV file
+        /// </summary>
+        private const string NICKNAMES_FILENAME = "nicknames.csv";
+        /// <summary>
+        /// Column index containing MAC string
+        /// </summary>
+        private const int MAC_COL_I = 0;
+        /// <summary>
+        /// Header row entry for MAC string
+        /// </summary>
+        private const string MAC_HDR = "Mac Address (XX:XX:XX:XX:XX:XX)";
+        /// <summary>
+        /// Column index containing nickname string
+        /// </summary>
+        private const int NICKNAME_COL_I = 1;
+        /// <summary>
+        /// Header row entry for nickname string
+        /// </summary>
+        private const string NICK_HDR = "Host nickname string";
+
+
+        private static NicknameData _instance = null;
+        /// <summary>
+        /// Singleton instance of this class.
+        /// Make sure to call LoadMfrData() to make this class useful.
+        /// </summary>
+        public static NicknameData instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new NicknameData();
+                }
+                return _instance;
+            }
+        }
+
+        /// <summary>
+        /// Singleton class; use NicknameData.instance instead
+        /// </summary>
+        private NicknameData()
+        {
+
+        }
+
+        /// <summary>
+        /// Keys are string MAC addresses, of the form XX:XX:XX:XX:XX:XX.  Values are user-entered host nicknames.
+        /// </summary>
+        private Dictionary<string, string> nicknameForMacAddr = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Load nicknames CSV file if present
+        /// </summary>
+        public void LoadNicknameData()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Dictionary<string, string> nickDict = new Dictionary<string, string>();
+            string myPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+            //var files = assembly.GetManifestResourceNames();
+            using (Stream nickFileStream = assembly.GetManifestResourceStream(myPath + NICKNAMES_FILENAME))
+            {
+                if (nickFileStream != null)
+                {
+                    using (TextFieldParser parser = new TextFieldParser(nickFileStream))
+                    {
+                        parser.TextFieldType = FieldType.Delimited;
+                        parser.SetDelimiters(",");
+                        string[] headerRow = parser.ReadFields();
+                        if (headerRow[MAC_COL_I] != MAC_HDR || headerRow[NICKNAME_COL_I] != NICK_HDR)
+                        {
+                            Console.WriteLine("MA-L (OUI) CSV file not in a format we understand");
+                        }
+                        else
+                        {
+                            while (!parser.EndOfData)
+                            {
+                                string[] fields = parser.ReadFields();
+                                string mac = fields[MAC_COL_I];
+                                string nick = fields[NICKNAME_COL_I];
+                                nickDict[mac] = nick;
+                            }
+                        }
+
+                    }
+                }
+                nicknameForMacAddr = nickDict;
+            }
+
+        }
+
+        /// <summary>
+        /// Get the user-set nickname for the given MAC address, or empty string if none set.
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <returns>the user-set nickname for the given MAC address, or empty string if none set.</returns>
+        public string GetNicknameForMac(PcapDotNet.Packets.Ethernet.MacAddress mac)
+        {
+            string macString = mac.ToString(); // comes out as XX:XX:XX:XX:XX:XX
+            if (nicknameForMacAddr.ContainsKey(macString))
+            {
+                return nicknameForMacAddr[macString];
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// Set nickname.  Set to an empty string to delete assignment.
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="nickname"></param>
+        public void SetNicknameForMac(PcapDotNet.Packets.Ethernet.MacAddress mac, string nickname)
+        {
+            string macString = mac.ToString(); // comes out as XX:XX:XX:XX:XX:XX
+            if(nickname.Length == 0)
+            {
+                nicknameForMacAddr.Remove(macString);
+            } else
+            {
+                nicknameForMacAddr[macString] = nickname;
+            }
+
+            // TODO: save file
+        }
+    }
+}

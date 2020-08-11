@@ -31,11 +31,30 @@ namespace PassiveAggressor.UI
         {
             InitializeComponent();
             labelIpV4Address.Content = ip.ToString();
-            labelMacAddress.Content = mac.ToString();
-            string mfrName = ManufacturerData.instance.GetMfrNameForMac(mac);
-            labelMfrString.Content = mfrName;
-            string mfrIconResource = ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
-            imageMfrIcon.Source = LoadImage(mfrIconResource);
+            Mac = mac;
+        }
+
+        /// <summary>
+        /// Backing variable for the Mac property - use the property instead
+        /// </summary>
+        private PcapDotNet.Packets.Ethernet.MacAddress _mac;
+        /// <summary>
+        /// Set will also update the GUI fields that are based on the MAC address
+        /// </summary>
+        private PcapDotNet.Packets.Ethernet.MacAddress Mac
+        {
+            get { return _mac; }
+            set
+            {
+                _mac = value;
+                labelMacAddress.Content = _mac.ToString();
+                string mfrName = ManufacturerData.instance.GetMfrNameForMac(_mac);
+                labelMfrString.Content = mfrName;
+                string mfrIconResource = ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
+                imageMfrIcon.Source = LoadImage(mfrIconResource);
+                string nickname = NicknameData.instance.GetNicknameForMac(_mac);
+                labelNickname.Text = nickname;
+            }
         }
 
         /// <summary>
@@ -103,6 +122,47 @@ namespace PassiveAggressor.UI
             catch (Exception ex)
             {
                 Console.WriteLine("Can't start FileZilla: " + ex);
+            }
+        }
+
+        private void ButtonEditNickname_Click(object sender, RoutedEventArgs e)
+        {
+            textBoxEnterNickname.Text = labelNickname.Text;
+
+            labelNickname.Visibility = Visibility.Hidden;
+            buttonEditNickname.Visibility = Visibility.Hidden;
+
+            textBoxEnterNickname.Visibility = Visibility.Visible;
+            buttonSaveNickname.Visibility = Visibility.Visible;
+            textBoxEnterNickname.Focus();
+        }
+
+        private void ButtonSaveNickname_Click(object sender, RoutedEventArgs e)
+        {
+            SaveEnteredNickname();
+        }
+
+        /// <summary>
+        /// Save whatever nickname has been entered in the entry field
+        /// </summary>
+        private void SaveEnteredNickname()
+        {
+            NicknameData.instance.SetNicknameForMac(Mac, textBoxEnterNickname.Text);
+            labelNickname.Text = NicknameData.instance.GetNicknameForMac(Mac);
+
+            labelNickname.Visibility = Visibility.Visible;
+            buttonEditNickname.Visibility = Visibility.Visible;
+
+            textBoxEnterNickname.Visibility = Visibility.Hidden;
+            buttonSaveNickname.Visibility = Visibility.Hidden;
+
+        }
+
+        private void TextBoxEnterNickname_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                SaveEnteredNickname();
             }
         }
     }
