@@ -55,6 +55,7 @@ namespace PassiveAggressor
         {
             nm.InitializeInterfaces();
             UI.ManufacturerData.instance.LoadMfrData();
+            UI.NicknameData.instance.LoadNicknameData();
             PopulateInterfaceList();
         }
 

@@ -73,35 +73,48 @@ namespace PassiveAggressor.UI
             string myPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
             //var files = assembly.GetManifestResourceNames();
-            using (Stream nickFileStream = assembly.GetManifestResourceStream(myPath + NICKNAMES_FILENAME))
+            try
             {
-                if (nickFileStream != null)
+                using (Stream nickFileStream = new FileStream(myPath + "\\" + NICKNAMES_FILENAME, FileMode.Open))
                 {
-                    using (TextFieldParser parser = new TextFieldParser(nickFileStream))
+                    if (nickFileStream != null)
                     {
-                        parser.TextFieldType = FieldType.Delimited;
-                        parser.SetDelimiters(",");
-                        string[] headerRow = parser.ReadFields();
-                        if (headerRow[MAC_COL_I] != MAC_HDR || headerRow[NICKNAME_COL_I] != NICK_HDR)
+                        using (TextFieldParser parser = new TextFieldParser(nickFileStream))
                         {
-                            Console.WriteLine("MA-L (OUI) CSV file not in a format we understand");
-                        }
-                        else
-                        {
-                            while (!parser.EndOfData)
+                            parser.TextFieldType = FieldType.Delimited;
+                            parser.SetDelimiters(",");
+                            string[] headerRow = parser.ReadFields();
+                            if (headerRow == null || headerRow[MAC_COL_I] != MAC_HDR || headerRow[NICKNAME_COL_I] != NICK_HDR)
                             {
-                                string[] fields = parser.ReadFields();
-                                string mac = fields[MAC_COL_I];
-                                string nick = fields[NICKNAME_COL_I];
-                                nickDict[mac] = nick;
+                                Console.WriteLine("Host nickname CSV file not in a format we understand");
                             }
-                        }
+                            else
+                            {
+                                while (!parser.EndOfData)
+                                {
+                                    string[] fields = parser.ReadFields();
+                                    string mac = fields[MAC_COL_I];
+                                    string nick = fields[NICKNAME_COL_I];
+                                    if (nick.Length > 0)
+                                    {
+                                        nickDict[mac] = nick;
+                                    }
+                                }
+                            }
 
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Couldn't open nickname file.");
                     }
                 }
-                nicknameForMacAddr = nickDict;
             }
-
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine("No nickname file (file not found).");
+            }
+            nicknameForMacAddr = nickDict;
         }
 
         /// <summary>
@@ -130,15 +143,38 @@ namespace PassiveAggressor.UI
         public void SetNicknameForMac(PcapDotNet.Packets.Ethernet.MacAddress mac, string nickname)
         {
             string macString = mac.ToString(); // comes out as XX:XX:XX:XX:XX:XX
-            if(nickname.Length == 0)
+            if (nickname.Length == 0)
             {
                 nicknameForMacAddr.Remove(macString);
-            } else
+            }
+            else
             {
                 nicknameForMacAddr[macString] = nickname;
             }
 
-            // TODO: save file
+            SaveNicknamesToFile();
+        }
+
+        /// <summary>
+        /// Save off the nicknames to disk
+        /// </summary>
+        private void SaveNicknamesToFile()
+        {
+            string myPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            using (Stream nickFileStream = new FileStream(myPath + "\\" + NICKNAMES_FILENAME, FileMode.Create))
+            {
+                if (nickFileStream != null)
+                {
+                    using (StreamWriter writer = new StreamWriter(nickFileStream))
+                    {
+                        writer.WriteLine(MAC_HDR + "," + NICK_HDR);
+                        foreach (KeyValuePair<string, string> nickEntry in nicknameForMacAddr)
+                        {
+                            writer.WriteLine(nickEntry.Key + "," + nickEntry.Value + "\r\n");
+                        }
+                    }
+                }
+            }
         }
     }
 }
