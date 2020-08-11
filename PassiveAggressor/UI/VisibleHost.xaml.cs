@@ -41,7 +41,7 @@ namespace PassiveAggressor.UI
         /// <summary>
         /// Set will also update the GUI fields that are based on the MAC address
         /// </summary>
-        private PcapDotNet.Packets.Ethernet.MacAddress Mac
+        public PcapDotNet.Packets.Ethernet.MacAddress Mac
         {
             get { return _mac; }
             set
@@ -56,6 +56,11 @@ namespace PassiveAggressor.UI
                 labelNickname.Text = nickname;
             }
         }
+
+        /// <summary>
+        /// True if this host has a user-entered nickname
+        /// </summary>
+        public bool HasNickname { get { return labelNickname.Text.Length > 0; } }
 
         /// <summary>
         /// Load an image from the indicated embedded resource
@@ -135,6 +140,7 @@ namespace PassiveAggressor.UI
             textBoxEnterNickname.Visibility = Visibility.Visible;
             buttonSaveNickname.Visibility = Visibility.Visible;
             textBoxEnterNickname.Focus();
+            textBoxEnterNickname.SelectAll();
         }
 
         private void ButtonSaveNickname_Click(object sender, RoutedEventArgs e)

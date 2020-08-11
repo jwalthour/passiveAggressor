@@ -170,7 +170,7 @@ namespace PassiveAggressor.UI
                         writer.WriteLine(MAC_HDR + "," + NICK_HDR);
                         foreach (KeyValuePair<string, string> nickEntry in nicknameForMacAddr)
                         {
-                            writer.WriteLine(nickEntry.Key + "," + nickEntry.Value + "\r\n");
+                            writer.WriteLine(nickEntry.Key + "," + nickEntry.Value);
                         }
                     }
                 }

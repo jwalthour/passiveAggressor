@@ -42,11 +42,18 @@ namespace PassiveAggressor
 
         private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
         {
+            // TODO: rather than replacing the list every time, check to see if the control for each host already exists, then insert new hosts in a sorted fashion
             stackHostList.Children.Clear();
-
+            List<UI.VisibleHost> hostControls = new List<UI.VisibleHost>();
             foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> host in hosts)
             {
                 UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
+                hostControls.Add(hostControl);
+            }
+
+            hostControls.Sort(CompareHostsForList);
+            foreach(UI.VisibleHost hostControl in hostControls)
+            {
                 stackHostList.Children.Add(hostControl);
             }
         }
@@ -98,6 +105,28 @@ namespace PassiveAggressor
 
             // Last sort criteria: description string
             return a.Description.CompareTo(b.Description);
+        }
+
+        /// <summary>
+        /// Used for sorting hosts in hosts list
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>-1 to indicate a should go first, 0 to indicate sameness, 1 to indicate b should go first</returns>
+        private int CompareHostsForList(UI.VisibleHost a, UI.VisibleHost b)
+        {
+            if(a.HasNickname && !b.HasNickname)
+            {
+                return -1;
+            }
+            else if (!a.HasNickname && b.HasNickname)
+            {
+                return 1;
+            }
+            else
+            {
+                return a.Mac.ToString().CompareTo(b.Mac.ToString());
+            }
         }
 
         private void ButtonClearHosts_Click(object sender, RoutedEventArgs e)
