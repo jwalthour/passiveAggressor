@@ -36,6 +36,8 @@ namespace PassiveAggressor.UI
             labelIpv4Address.Content = intf.IpV4Address != null ? (intf.IpV4Address.Address as PcapDotNet.Core.IpV4SocketAddress).Address.ToString() : "";
             UpdateListenButtonEnables(intf.Listening);
 
+            buttonPingSubnet.IsEnabled = intf.IpV4Address != null;
+
             intf.ListeningChanged += Intf_ListeningChanged;
         }
 

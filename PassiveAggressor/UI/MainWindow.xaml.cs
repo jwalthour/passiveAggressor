@@ -42,12 +42,82 @@ namespace PassiveAggressor
 
         private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
         {
-            stackHostList.Children.Clear();
-
             foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> host in hosts)
             {
-                UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
-                stackHostList.Children.Add(hostControl);
+
+                // If we still have that label, remove it
+                if (stackHostList.Children.Count > 0 && stackHostList.Children[0] is Label)
+                {
+                    stackHostList.Children.Clear();
+                }
+
+                // Find where this host would go in the list.  If it's not there, insert it.
+                int i = 0;
+                bool shouldAdd = stackHostList.Children.Count == 0;
+                UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
+                newHostControl.NicknameUpdated += UserSetAHostNickname;
+                foreach (object control in stackHostList.Children)
+                {
+                    UI.VisibleHost existingHostControl = control as UI.VisibleHost;
+                    int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
+                    if (sortOrder == 0)
+                    {
+                        // This host already exists in the list
+                        // TODO: if we start displaying "last seen" value, update that
+                        shouldAdd = false;
+                        break;
+                    }
+                    else if (sortOrder < 0)
+                    {
+                        // This host goes somewhere after the existing control.
+                        // Keep going
+                        shouldAdd = true;
+                    }
+                    else if (sortOrder > 0)
+                    {
+                        // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
+                        shouldAdd = true;
+                        break;
+                    }
+                    i++;
+                }
+
+                if (shouldAdd)
+                {
+                    if (i < stackHostList.Children.Count)
+                    {
+                        stackHostList.Children.Insert(i, newHostControl);
+                    }
+                    else
+                    {
+                        stackHostList.Children.Add(newHostControl);
+                    }
+                }
+            }
+
+            //hostControls.Sort(CompareHostsForList);
+            //foreach (UI.VisibleHost hostControl in hostControls)
+            //{
+            //    stackHostList.Children.Add(hostControl);
+            //}
+        }
+
+        /// <summary>
+        /// Called whenever an event informs us the user has updated (edited, added, or deleted) a host nickname
+        /// </summary>
+        private void UserSetAHostNickname(UI.VisibleHost hostControlUpdated)
+        {
+            // Re-sort the hosts list
+            List<UI.VisibleHost> sortedHosts = new List<UI.VisibleHost>();
+            foreach(UI.VisibleHost existingHost in stackHostList.Children)
+            {
+                sortedHosts.Add(existingHost);
+            }
+            sortedHosts.Sort(CompareHostsForList);
+            stackHostList.Children.Clear();
+            foreach(UI.VisibleHost existingHost in sortedHosts)
+            {
+                stackHostList.Children.Add(existingHost);
             }
         }
 
@@ -55,6 +125,7 @@ namespace PassiveAggressor
         {
             nm.InitializeInterfaces();
             UI.ManufacturerData.instance.LoadMfrData();
+            UI.NicknameData.instance.LoadNicknameData();
             PopulateInterfaceList();
         }
 
@@ -99,9 +170,32 @@ namespace PassiveAggressor
             return a.Description.CompareTo(b.Description);
         }
 
+        /// <summary>
+        /// Used for sorting hosts in hosts list
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>-1 to indicate a should go first, 0 to indicate sameness, 1 to indicate b should go first</returns>
+        private int CompareHostsForList(UI.VisibleHost a, UI.VisibleHost b)
+        {
+            if (a.HasNickname && !b.HasNickname)
+            {
+                return -1;
+            }
+            else if (!a.HasNickname && b.HasNickname)
+            {
+                return 1;
+            }
+            else
+            {
+                return a.Mac.CompareTo(b.Mac);
+            }
+        }
+
         private void ButtonClearHosts_Click(object sender, RoutedEventArgs e)
         {
             nm.ClearHostsList();
+            stackHostList.Children.Clear();
         }
     }
 }

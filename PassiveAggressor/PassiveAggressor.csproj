@@ -116,6 +116,7 @@
     <Compile Include="UI\NetworkInterface.xaml.cs">
       <DependentUpon>NetworkInterface.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\NicknameData.cs" />
     <Compile Include="UI\VisibleHost.xaml.cs">
       <DependentUpon>VisibleHost.xaml</DependentUpon>
     </Compile>
