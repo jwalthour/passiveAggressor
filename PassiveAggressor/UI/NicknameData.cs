@@ -110,7 +110,7 @@ namespace PassiveAggressor.UI
                     }
                 }
             }
-            catch (FileNotFoundException ex)
+            catch (FileNotFoundException)
             {
                 Console.WriteLine("No nickname file (file not found).");
             }

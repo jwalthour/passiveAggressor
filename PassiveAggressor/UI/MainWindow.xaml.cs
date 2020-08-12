@@ -42,20 +42,64 @@ namespace PassiveAggressor
 
         private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
         {
-            // TODO: rather than replacing the list every time, check to see if the control for each host already exists, then insert new hosts in a sorted fashion
-            stackHostList.Children.Clear();
-            List<UI.VisibleHost> hostControls = new List<UI.VisibleHost>();
             foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> host in hosts)
             {
-                UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
-                hostControls.Add(hostControl);
+
+                // If we still have that label, remove it
+                if (stackHostList.Children.Count > 0 && stackHostList.Children[0] is Label)
+                {
+                    stackHostList.Children.Clear();
+                }
+
+                // Find where this host would go in the list.  If it's not there, insert it.
+                int i = 0;
+                bool shouldAdd = stackHostList.Children.Count == 0;
+
+                foreach (object control in stackHostList.Children)
+                {
+                    UI.VisibleHost existingHostControl = control as UI.VisibleHost;
+                    int sortOrder = existingHostControl.Mac.CompareTo(host.Key);
+                    if (sortOrder == 0)
+                    {
+                        // This host already exists in the list
+                        // TODO: if we start displaying "last seen" value, update that
+                        shouldAdd = false;
+                        break;
+                    }
+                    else if (sortOrder < 0)
+                    {
+                        // This host goes somewhere after the existing control.
+                        // Keep going
+                        shouldAdd = true;
+                    }
+                    else if (sortOrder > 0)
+                    {
+                        // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
+                        shouldAdd = true;
+                        break;
+                    }
+                    i++;
+                }
+
+                if (shouldAdd)
+                {
+                    UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
+                    if (i < stackHostList.Children.Count)
+                    {
+                        stackHostList.Children.Insert(i, hostControl);
+                    }
+                    else
+                    {
+                        stackHostList.Children.Add(hostControl);
+                    }
+                }
             }
 
-            hostControls.Sort(CompareHostsForList);
-            foreach(UI.VisibleHost hostControl in hostControls)
-            {
-                stackHostList.Children.Add(hostControl);
-            }
+            //hostControls.Sort(CompareHostsForList);
+            //foreach (UI.VisibleHost hostControl in hostControls)
+            //{
+            //    stackHostList.Children.Add(hostControl);
+            //}
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -115,7 +159,7 @@ namespace PassiveAggressor
         /// <returns>-1 to indicate a should go first, 0 to indicate sameness, 1 to indicate b should go first</returns>
         private int CompareHostsForList(UI.VisibleHost a, UI.VisibleHost b)
         {
-            if(a.HasNickname && !b.HasNickname)
+            if (a.HasNickname && !b.HasNickname)
             {
                 return -1;
             }
@@ -125,13 +169,14 @@ namespace PassiveAggressor
             }
             else
             {
-                return a.Mac.ToString().CompareTo(b.Mac.ToString());
+                return a.Mac.CompareTo(b.Mac);
             }
         }
 
         private void ButtonClearHosts_Click(object sender, RoutedEventArgs e)
         {
             nm.ClearHostsList();
+            stackHostList.Children.Clear();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PcapDotNet.Packets.Ethernet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
