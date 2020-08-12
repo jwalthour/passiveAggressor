@@ -189,5 +189,15 @@ namespace PassiveAggressor.UI
         {
             SaveEnteredNickname();
         }
+
+        private void buttonCopyIpAddress_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetData(DataFormats.Text, labelIpV4Address.Content);
+        }
+
+        private void buttonCopyMacAddress_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetData(DataFormats.Text, labelMacAddress.Content);
+        }
     }
 }
