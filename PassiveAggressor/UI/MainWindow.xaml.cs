@@ -54,11 +54,12 @@ namespace PassiveAggressor
                 // Find where this host would go in the list.  If it's not there, insert it.
                 int i = 0;
                 bool shouldAdd = stackHostList.Children.Count == 0;
+                UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
 
                 foreach (object control in stackHostList.Children)
                 {
                     UI.VisibleHost existingHostControl = control as UI.VisibleHost;
-                    int sortOrder = existingHostControl.Mac.CompareTo(host.Key);
+                    int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
                     if (sortOrder == 0)
                     {
                         // This host already exists in the list
@@ -83,14 +84,13 @@ namespace PassiveAggressor
 
                 if (shouldAdd)
                 {
-                    UI.VisibleHost hostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
                     if (i < stackHostList.Children.Count)
                     {
-                        stackHostList.Children.Insert(i, hostControl);
+                        stackHostList.Children.Insert(i, newHostControl);
                     }
                     else
                     {
-                        stackHostList.Children.Add(hostControl);
+                        stackHostList.Children.Add(newHostControl);
                     }
                 }
             }
