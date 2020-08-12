@@ -184,5 +184,10 @@ namespace PassiveAggressor.UI
                 SaveEnteredNickname();
             }
         }
+
+        private void TextBoxEnterNickname_LostFocus(object sender, RoutedEventArgs e)
+        {
+            SaveEnteredNickname();
+        }
     }
 }
