@@ -55,7 +55,7 @@ namespace PassiveAggressor
                 int i = 0;
                 bool shouldAdd = stackHostList.Children.Count == 0;
                 UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
-
+                newHostControl.NicknameUpdated += UserSetAHostNickname;
                 foreach (object control in stackHostList.Children)
                 {
                     UI.VisibleHost existingHostControl = control as UI.VisibleHost;
@@ -100,6 +100,25 @@ namespace PassiveAggressor
             //{
             //    stackHostList.Children.Add(hostControl);
             //}
+        }
+
+        /// <summary>
+        /// Called whenever an event informs us the user has updated (edited, added, or deleted) a host nickname
+        /// </summary>
+        private void UserSetAHostNickname(UI.VisibleHost hostControlUpdated)
+        {
+            // Re-sort the hosts list
+            List<UI.VisibleHost> sortedHosts = new List<UI.VisibleHost>();
+            foreach(UI.VisibleHost existingHost in stackHostList.Children)
+            {
+                sortedHosts.Add(existingHost);
+            }
+            sortedHosts.Sort(CompareHostsForList);
+            stackHostList.Children.Clear();
+            foreach(UI.VisibleHost existingHost in sortedHosts)
+            {
+                stackHostList.Children.Add(existingHost);
+            }
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)

@@ -28,7 +28,7 @@ namespace PassiveAggressor.UI
             InitializeComponent();
         }
 
-        public VisibleHost(PcapDotNet.Packets.Ethernet.MacAddress mac, PcapDotNet.Packets.IpV4.IpV4Address ip)
+        public VisibleHost(MacAddress mac, PcapDotNet.Packets.IpV4.IpV4Address ip)
         {
             InitializeComponent();
             labelIpV4Address.Content = ip.ToString();
@@ -38,11 +38,11 @@ namespace PassiveAggressor.UI
         /// <summary>
         /// Backing variable for the Mac property - use the property instead
         /// </summary>
-        private PcapDotNet.Packets.Ethernet.MacAddress _mac;
+        private MacAddress _mac;
         /// <summary>
         /// Set will also update the GUI fields that are based on the MAC address
         /// </summary>
-        public PcapDotNet.Packets.Ethernet.MacAddress Mac
+        public MacAddress Mac
         {
             get { return _mac; }
             set
@@ -57,6 +57,12 @@ namespace PassiveAggressor.UI
                 labelNickname.Text = nickname;
             }
         }
+
+        public delegate void NicknameUpdated_d(VisibleHost sender);
+        /// <summary>
+        /// This event will be fired whenever the user updates the label on this host
+        /// </summary>
+        public event NicknameUpdated_d NicknameUpdated;
 
         /// <summary>
         /// True if this host has a user-entered nickname
@@ -119,6 +125,11 @@ namespace PassiveAggressor.UI
             LaunchFileZilla((string)labelIpV4Address.Content, "sftp");
         }
 
+        /// <summary>
+        /// Launch FileZilla to connect to the given host
+        /// </summary>
+        /// <param name="host">Host IP address or DNS name</param>
+        /// <param name="protocol">string protocol prefix, eg "sftp" or "ftp".  Don't knclude "://"</param>
         private void LaunchFileZilla(string host, string protocol)
         {
             try
@@ -163,6 +174,7 @@ namespace PassiveAggressor.UI
             textBoxEnterNickname.Visibility = Visibility.Hidden;
             buttonSaveNickname.Visibility = Visibility.Hidden;
 
+            NicknameUpdated?.Invoke(this);
         }
 
         private void TextBoxEnterNickname_KeyDown(object sender, KeyEventArgs e)
