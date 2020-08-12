@@ -88,5 +88,35 @@ namespace PassiveAggressor
         {
             return a.ToValue().CompareTo(b.ToValue());
         }
+
+        /// <summary>
+        /// Get the number of leading 1s in the binary representation of addr.
+        /// For example, if provided 255.255.0.0, will return 16.
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns>the number of leading 1s in the binary representation of addr</returns>
+        public static int GetNetmaskBitCount( this PcapDotNet.Packets.IpV4.IpV4Address addr)
+        {
+            uint inverseValue = ~addr.ToValue();
+
+            // There is a better way to do this.  It uses Log2.
+            // For the life of me, I can't get the Log2 function
+            // to be referenced correctly.  If you figure out how to
+            // get this to work, do that instead:
+            //System.Numerics.BitOperations.Log2();
+            // But realistically, this function normally is called less than 10 times
+            // and the loop iterates a max of 32 iterations.
+            // So it's no sweat to do it the stupid way.
+            int i;
+            for (i = 0; i < 32; i++)
+            {
+                uint mask = (1u << (31 - i));
+                if((inverseValue & mask) > 0)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
     }
 }
