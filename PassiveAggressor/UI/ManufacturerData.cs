@@ -96,11 +96,10 @@ namespace PassiveAggressor.UI
                 {
                     parser.TextFieldType = FieldType.Delimited;
                     parser.SetDelimiters(",");
-                    int i = 0;
                     string[] headerRow = parser.ReadFields();
                     const int ICON_COL_I = 1;
                     const int MFR_NAME_COL_I = 0;
-                    if (headerRow[ICON_COL_I] != "Icon Resource Name" || headerRow[MFR_NAME_COL_I] != "Organization Name")
+                    if (headerRow == null || headerRow[ICON_COL_I] != "Icon Resource Name" || headerRow[MFR_NAME_COL_I] != "Organization Name")
                     {
                         Console.WriteLine("Icon index CSV file not in a format we understand");
                     }

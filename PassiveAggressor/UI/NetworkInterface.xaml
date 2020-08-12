@@ -8,7 +8,7 @@
              d:DesignHeight="78.502" d:DesignWidth="300">
     <Grid Background="White" Margin="4,4,4,0">
         <Label x:Name="labelDescription" Content="Description" VerticalAlignment="Top"/>
-        <Label x:Name="labelIpv4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="0,22,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="labelIpv4Address" Content="111.222.333.444/24" Margin="0,22,138,0" VerticalAlignment="Top"/>
         <Button x:Name="buttonListen" Content="Listen" HorizontalAlignment="Left" Margin="6,48,0,0" VerticalAlignment="Top" Width="43" ToolTip="Begin listening on this interface.  Hosts heard on this interface will be added to the list." Click="ButtonListen_Click"/>
         <Button x:Name="buttonIgnore" Content="Ignore" HorizontalAlignment="Left" Margin="54,48,0,0" VerticalAlignment="Top" Width="43" ToolTip="Stop listening on this interface.  Hosts heard already will not be removed from the list." Click="ButtonIgnore_Click"/>
         <Button x:Name="buttonPingSubnet" Content="Ping subnet" Margin="0,25,58,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" ToolTip="Send one ping request to each valid IP address in this subnet, which can be many.  This is an active action, not a passive one, and may draw the attention of an Intrusion Detection System, or otherwise be noticeable by its bandwidth usage." Click="ButtonPingSubnet_Click"/>

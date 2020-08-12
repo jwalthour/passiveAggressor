@@ -33,8 +33,19 @@ namespace PassiveAggressor.UI
             InitializeComponent();
 
             labelDescription.Content = intf.Description;
-            labelIpv4Address.Content = intf.IpV4Address != null ? (intf.IpV4Address.Address as PcapDotNet.Core.IpV4SocketAddress).Address.ToString() : "";
+            if (intf.IpV4Address != null)
+            {
+                PcapDotNet.Packets.IpV4.IpV4Address addr = (intf.IpV4Address.Address as PcapDotNet.Core.IpV4SocketAddress).Address;
+                PcapDotNet.Packets.IpV4.IpV4Address netmask = (intf.IpV4Address.Netmask as PcapDotNet.Core.IpV4SocketAddress).Address;
+                labelIpv4Address.Content = addr.ToString() + "/" + netmask.GetNetmaskBitCount();
+            }
+            else
+            {
+                labelIpv4Address.Content = "";
+            }
             UpdateListenButtonEnables(intf.Listening);
+
+            buttonPingSubnet.IsEnabled = intf.IpV4Address != null;
 
             intf.ListeningChanged += Intf_ListeningChanged;
         }
