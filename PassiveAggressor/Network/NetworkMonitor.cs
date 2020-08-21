@@ -90,6 +90,7 @@ namespace PassiveAggressor
         private void incorporatePackets(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
+            ObservedHost host = null;
 
             try
             {
@@ -97,7 +98,7 @@ namespace PassiveAggressor
                 {
                     while (hostsToIncorporate.Count > 0) // assumes Queue.Count is atomic and thus automatically thread-safe
                     {
-                        ObservedHost host = null;
+                        host = null;
 
                         // This lock needs to be very short because the listener threads aren't listening while they wait for the lock
                         lock (hostsToIncorporate)
@@ -111,11 +112,12 @@ namespace PassiveAggressor
                         if (host != null)
                         {
                             // Is this outbound from the interface on which it was captured?
-                            if (!host.IntfIpV4Address.Address.EqualsAddr(host.HostIpV4Address))
+                            if (host.IntfIpV4Address == null || !host.IntfIpV4Address.Address.EqualsAddr(host.HostIpV4Address))
                             {
                                 // Is this from the same subnet as the interface on which it was captured?
-                                if (host.IntfIpV4Address.SubnetContains(host.HostIpV4Address))
+                                if (host.IntfIpV4Address == null || host.IntfIpV4Address.SubnetContains(host.HostIpV4Address))
                                 {
+                                    //TODO: if host.IntfIpV4Address == null, check if it's an internal address.  Discard WAN addresses.
                                     Hosts[host.HostMacAddress] = host;
 
                                     if (DateTime.Now > lastUpdateTime.AddSeconds(UpdateIntervalSeconds))
