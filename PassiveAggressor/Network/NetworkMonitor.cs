@@ -137,9 +137,9 @@ namespace PassiveAggressor.Network
                                     // Store in appropriate dictionaries
                                     host.ManufacturerDescription = mfrData.GetMfrNameForMac(host.HostMacAddress);
 
-                                    if(Hosts[host.ManufacturerDescription] == null)
+                                    if(!Hosts.ContainsKey(host.ManufacturerDescription))
                                     {
-                                        Hosts[host.ManufacturerDescription] = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>();
+                                        Hosts.Add(host.ManufacturerDescription, new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>());
                                     }
                                     Hosts[host.ManufacturerDescription][host.HostMacAddress] = host;
 

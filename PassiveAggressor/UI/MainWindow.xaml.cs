@@ -123,6 +123,7 @@ namespace PassiveAggressor
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            UI.NicknameData.instance.LoadNicknameData();
             nm.Initialize();
             PopulateInterfaceList();
         }
