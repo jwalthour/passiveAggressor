@@ -20,12 +20,6 @@ namespace PassiveAggressor.Network
         private const string UNKNOWN_MFR_ICON_RESOURCE = "PassiveAggressor.data.unknownMfr.png";
         private const string MFR_ICON_RESOURCE_PREFIX = "PassiveAggressor.data.mfrIcons.";
 
-        public ManufacturerData()
-        {
-
-        }
-
-
         private Dictionary<uint, string> mfrNameForMacPrefix = null;
         private Dictionary<string, string> iconResourceNameForMfrName = null;
 

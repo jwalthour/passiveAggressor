@@ -28,35 +28,22 @@ namespace PassiveAggressor.UI
             InitializeComponent();
         }
 
-        public VisibleHost(MacAddress mac, PcapDotNet.Packets.IpV4.IpV4Address ip)
+        public VisibleHost(Network.ObservedHost host, string iconResourceName)
         {
             InitializeComponent();
-            labelIpV4Address.Content = ip.ToString();
-            Mac = mac;
+            labelIpV4Address.Content = host.HostIpV4Address.ToString();
+            Mac = host.HostMacAddress;
+            labelMacAddress.Content = Mac.ToString();
+            labelMfrString.Content = host.ManufacturerDescription;
+            imageMfrIcon.Source = LoadImage(iconResourceName);
+            string nickname = NicknameData.instance.GetNicknameForMac(Mac);
+            labelNickname.Text = nickname;
         }
 
         /// <summary>
-        /// Backing variable for the Mac property - use the property instead
-        /// </summary>
-        private MacAddress _mac;
-        /// <summary>
         /// Set will also update the GUI fields that are based on the MAC address
         /// </summary>
-        public MacAddress Mac
-        {
-            get { return _mac; }
-            set
-            {
-                _mac = value;
-                labelMacAddress.Content = _mac.ToString();
-                string mfrName = Network.ManufacturerData.instance.GetMfrNameForMac(_mac);
-                labelMfrString.Content = mfrName;
-                string mfrIconResource = Network.ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
-                imageMfrIcon.Source = LoadImage(mfrIconResource);
-                string nickname = NicknameData.instance.GetNicknameForMac(_mac);
-                labelNickname.Text = nickname;
-            }
-        }
+        public MacAddress Mac { get; private set; }
 
         public delegate void NicknameUpdated_d(VisibleHost sender);
         /// <summary>
@@ -165,8 +152,8 @@ namespace PassiveAggressor.UI
         /// </summary>
         private void SaveEnteredNickname()
         {
-            Network.NicknameData.instance.SetNicknameForMac(Mac, textBoxEnterNickname.Text);
-            labelNickname.Text = Network.NicknameData.instance.GetNicknameForMac(Mac);
+            NicknameData.instance.SetNicknameForMac(Mac, textBoxEnterNickname.Text);
+            labelNickname.Text = NicknameData.instance.GetNicknameForMac(Mac);
 
             labelNickname.Visibility = Visibility.Visible;
             buttonEditNickname.Visibility = Visibility.Visible;

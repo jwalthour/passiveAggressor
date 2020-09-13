@@ -39,55 +39,58 @@ namespace PassiveAggressor
         /// <param name="hosts"></param>
         private void UpdateVisibleHostsList(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hosts)
         {
-            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> host in hosts)
+            foreach (KeyValuePair<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hostGroup in hosts)
             {
-
-                // If we still have that label, remove it
-                if (stackHostList.Children.Count > 0 && stackHostList.Children[0] is Label)
+                foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> host in hostGroup.Value)
                 {
-                    stackHostList.Children.Clear();
-                }
 
-                // Find where this host would go in the list.  If it's not there, insert it.
-                int i = 0;
-                bool shouldAdd = stackHostList.Children.Count == 0;
-                UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
-                newHostControl.NicknameUpdated += UserSetAHostNickname;
-                foreach (object control in stackHostList.Children)
-                {
-                    UI.VisibleHost existingHostControl = control as UI.VisibleHost;
-                    int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
-                    if (sortOrder == 0)
+                    // If we still have that label, remove it
+                    if (stackHostList.Children.Count > 0 && stackHostList.Children[0] is Label)
                     {
-                        // This host already exists in the list
-                        // TODO: if we start displaying "last seen" value, update that
-                        shouldAdd = false;
-                        break;
+                        stackHostList.Children.Clear();
                     }
-                    else if (sortOrder < 0)
-                    {
-                        // This host goes somewhere after the existing control.
-                        // Keep going
-                        shouldAdd = true;
-                    }
-                    else if (sortOrder > 0)
-                    {
-                        // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
-                        shouldAdd = true;
-                        break;
-                    }
-                    i++;
-                }
 
-                if (shouldAdd)
-                {
-                    if (i < stackHostList.Children.Count)
+                    // Find where this host would go in the list.  If it's not there, insert it.
+                    int i = 0;
+                    bool shouldAdd = stackHostList.Children.Count == 0;
+                    UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value, nm.GetIconResourceNameForMfr(host.Value.ManufacturerDescription));
+                    newHostControl.NicknameUpdated += UserSetAHostNickname;
+                    foreach (object control in stackHostList.Children)
                     {
-                        stackHostList.Children.Insert(i, newHostControl);
+                        UI.VisibleHost existingHostControl = control as UI.VisibleHost;
+                        int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
+                        if (sortOrder == 0)
+                        {
+                            // This host already exists in the list
+                            // TODO: if we start displaying "last seen" value, update that
+                            shouldAdd = false;
+                            break;
+                        }
+                        else if (sortOrder < 0)
+                        {
+                            // This host goes somewhere after the existing control.
+                            // Keep going
+                            shouldAdd = true;
+                        }
+                        else if (sortOrder > 0)
+                        {
+                            // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
+                            shouldAdd = true;
+                            break;
+                        }
+                        i++;
                     }
-                    else
+
+                    if (shouldAdd)
                     {
-                        stackHostList.Children.Add(newHostControl);
+                        if (i < stackHostList.Children.Count)
+                        {
+                            stackHostList.Children.Insert(i, newHostControl);
+                        }
+                        else
+                        {
+                            stackHostList.Children.Add(newHostControl);
+                        }
                     }
                 }
             }
@@ -130,10 +133,10 @@ namespace PassiveAggressor
         private void PopulateInterfaceList()
         {
             stackInterfaceList.Children.Clear();
-            List<ListeningInterface> interfaces = nm.Interfaces.Values.ToList();
+            List<Network.ListeningInterface> interfaces = nm.Interfaces.Values.ToList();
             // Put the ones with IP addresses first in the list
             interfaces.Sort(CompareInterfacesForList);
-            foreach (ListeningInterface intf in interfaces)
+            foreach (Network.ListeningInterface intf in interfaces)
             {
                 // Only show the interfaces that started up properly
                 if (intf.ErrorMessage.Length == 0)
@@ -150,7 +153,7 @@ namespace PassiveAggressor
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>-1 to indicate a should go first, 0 to indicate sameness, 1 to indicate b should go first</returns>
-        private int CompareInterfacesForList(ListeningInterface a, ListeningInterface b)
+        private int CompareInterfacesForList(Network.ListeningInterface a, Network.ListeningInterface b)
         {
             if (a.IpV4Address != null && b.IpV4Address == null)
             {
