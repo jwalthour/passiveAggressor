@@ -49,11 +49,11 @@ namespace PassiveAggressor.UI
             {
                 _mac = value;
                 labelMacAddress.Content = _mac.ToString();
-                string mfrName = ManufacturerData.instance.GetMfrNameForMac(_mac);
+                string mfrName = Network.ManufacturerData.instance.GetMfrNameForMac(_mac);
                 labelMfrString.Content = mfrName;
-                string mfrIconResource = ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
+                string mfrIconResource = Network.ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
                 imageMfrIcon.Source = LoadImage(mfrIconResource);
-                string nickname = NicknameData.instance.GetNicknameForMac(_mac);
+                string nickname = Network.NicknameData.instance.GetNicknameForMac(_mac);
                 labelNickname.Text = nickname;
             }
         }
@@ -165,8 +165,8 @@ namespace PassiveAggressor.UI
         /// </summary>
         private void SaveEnteredNickname()
         {
-            NicknameData.instance.SetNicknameForMac(Mac, textBoxEnterNickname.Text);
-            labelNickname.Text = NicknameData.instance.GetNicknameForMac(Mac);
+            Network.NicknameData.instance.SetNicknameForMac(Mac, textBoxEnterNickname.Text);
+            labelNickname.Text = Network.NicknameData.instance.GetNicknameForMac(Mac);
 
             labelNickname.Visibility = Visibility.Visible;
             buttonEditNickname.Visibility = Visibility.Visible;

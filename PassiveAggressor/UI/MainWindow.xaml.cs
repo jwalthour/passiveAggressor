@@ -20,7 +20,8 @@ namespace PassiveAggressor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private NetworkMonitor nm = new NetworkMonitor();
+        private Network.NetworkMonitor nm = new Network.NetworkMonitor();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -40,6 +41,10 @@ namespace PassiveAggressor
             Dispatcher.BeginInvoke(new Action(() => UpdateVisibleHostsList(hostsShallowCopy)));
         }
 
+        /// <summary>
+        /// Called whenever the NetworkMonitor reports a chang ein the hosts list.  Updates the host list in the GUI.
+        /// </summary>
+        /// <param name="hosts"></param>
         private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
         {
             foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> host in hosts)
@@ -124,8 +129,8 @@ namespace PassiveAggressor
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             nm.InitializeInterfaces();
-            UI.ManufacturerData.instance.LoadMfrData();
-            UI.NicknameData.instance.LoadNicknameData();
+            Network.ManufacturerData.instance.LoadMfrData();
+            Network.NicknameData.instance.LoadNicknameData();
             PopulateInterfaceList();
         }
 

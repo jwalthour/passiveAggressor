@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PassiveAggressor.UI
+namespace PassiveAggressor.Network
 {
     class ManufacturerData
     {

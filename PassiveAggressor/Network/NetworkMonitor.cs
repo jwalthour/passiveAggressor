@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using PcapDotNet.Core;
 
 
-namespace PassiveAggressor
+namespace PassiveAggressor.Network
 {
     class NetworkMonitor
     {
@@ -31,6 +31,7 @@ namespace PassiveAggressor
         /// Hosts that are ready to deliver (that is, confirmed to be local addresses)
         /// </summary>
         private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> Hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>();
+        //private Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>> Hosts = new Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>>();
 
         /// <summary>
         /// Event fired to indicate changes to HostList
