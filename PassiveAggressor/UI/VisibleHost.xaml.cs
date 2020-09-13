@@ -28,7 +28,7 @@ namespace PassiveAggressor.UI
             InitializeComponent();
         }
 
-        public VisibleHost(Network.ObservedHost host, string iconResourceName)
+        public VisibleHost(Network.ObservedHost host)
         {
             InitializeComponent();
             labelIpV4Address.Content = host.HostIpV4Address.ToString();

@@ -9,7 +9,7 @@
         <Image x:Name="imageMfrIcon" HorizontalAlignment="Left" Height="50" Margin="5,5,0,0" VerticalAlignment="Top" Width="50" Source="/PassiveAggressor;component/data/unknownMfr.png"/>
         <Label x:Name="labelMfrString" Content="Manufacturer name" Margin="60,5,32,0" VerticalAlignment="Top"/>
         <Expander x:Name="expanderHostsList" Header="1 Host discovered" Height="165" Margin="60,31,10,0" VerticalAlignment="Top">
-            <Grid Background="#FFE5E5E5"/>
+            <StackPanel Background="#FFE5E5E5" x:Name="stackHostList"/>
         </Expander>
 
     </Grid>
