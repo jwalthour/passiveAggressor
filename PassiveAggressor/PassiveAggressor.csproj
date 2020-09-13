@@ -123,6 +123,9 @@
       <DependentUpon>NetworkInterface.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\NicknameData.cs" />
+    <Compile Include="UI\HostGroup.xaml.cs">
+      <DependentUpon>HostGroup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\VisibleHost.xaml.cs">
       <DependentUpon>VisibleHost.xaml</DependentUpon>
     </Compile>
@@ -140,6 +143,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\NetworkInterface.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\HostGroup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -34,8 +34,6 @@ namespace PassiveAggressor.UI
             labelIpV4Address.Content = host.HostIpV4Address.ToString();
             Mac = host.HostMacAddress;
             labelMacAddress.Content = Mac.ToString();
-            labelMfrString.Content = host.ManufacturerDescription;
-            imageMfrIcon.Source = LoadImage(iconResourceName);
             string nickname = NicknameData.instance.GetNicknameForMac(Mac);
             labelNickname.Text = nickname;
         }
@@ -55,28 +53,6 @@ namespace PassiveAggressor.UI
         /// True if this host has a user-entered nickname
         /// </summary>
         public bool HasNickname { get { return labelNickname.Text.Length > 0; } }
-
-        /// <summary>
-        /// Load an image from the indicated embedded resource
-        /// </summary>
-        /// <param name="resourceName">Path to an embedded PNG resource</param>
-        /// <returns></returns>
-        private ImageSource LoadImage(string resourceName)
-        {
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            BitmapImage bitmap = new BitmapImage();
-
-            using (System.IO.Stream stream =
-                assembly.GetManifestResourceStream(resourceName))
-            {
-                bitmap.BeginInit();
-                bitmap.StreamSource = stream;
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-            }
-
-            return bitmap;
-        }
 
         private void ButtonHttp_Click(object sender, RoutedEventArgs e)
         {
