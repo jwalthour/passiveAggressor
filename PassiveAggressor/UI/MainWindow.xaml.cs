@@ -2,17 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 namespace PassiveAggressor
 {
     /// <summary>
@@ -34,10 +26,10 @@ namespace PassiveAggressor
             nm.HostListChanged += Nm_HostListChanged;
         }
 
-        private void Nm_HostListChanged(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
+        private void Nm_HostListChanged(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hosts)
         {
             // Run it on the GUI thread
-            Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hostsShallowCopy = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>(hosts);
+            Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hostsShallowCopy = new Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>>(hosts);
             Dispatcher.BeginInvoke(new Action(() => UpdateVisibleHostsList(hostsShallowCopy)));
         }
 
@@ -45,9 +37,9 @@ namespace PassiveAggressor
         /// Called whenever the NetworkMonitor reports a chang ein the hosts list.  Updates the host list in the GUI.
         /// </summary>
         /// <param name="hosts"></param>
-        private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
+        private void UpdateVisibleHostsList(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hosts)
         {
-            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> host in hosts)
+            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> host in hosts)
             {
 
                 // If we still have that label, remove it

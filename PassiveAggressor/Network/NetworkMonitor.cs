@@ -29,15 +29,17 @@ namespace PassiveAggressor.Network
 
         /// <summary>
         /// Hosts that are ready to deliver (that is, confirmed to be local addresses)
+        /// Dictionary goes:
+        /// manufacturer string -> Host -> detailed host info
         /// </summary>
-        private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> Hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>();
-        //private Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>> Hosts = new Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>>();
+        //private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> Hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>();
+        private Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>> Hosts = new Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>>();
 
         /// <summary>
         /// Event fired to indicate changes to HostList
         /// </summary>
         /// <param name="hosts">The updated list of hosts</param>
-        public delegate void HostListChanged_d(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts);
+        public delegate void HostListChanged_d(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>> hosts);
         /// <summary>
         /// Event fired to indicate changes to Hosts list
         /// </summary>
@@ -133,7 +135,15 @@ namespace PassiveAggressor.Network
                                 if (host.IntfIpV4Address == null || host.IntfIpV4Address.SubnetContains(host.HostIpV4Address))
                                 {
                                     //TODO: if host.IntfIpV4Address == null, check if it's an internal address.  Discard WAN addresses.
-                                    Hosts[host.HostMacAddress] = host;
+
+                                    // Store in appropriate dictionaries
+                                    host.ManufacturerDescription = mfrData.GetMfrNameForMac(host.HostMacAddress);
+
+                                    if(Hosts[host.ManufacturerDescription] == null)
+                                    {
+                                        Hosts[host.ManufacturerDescription] = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>();
+                                    }
+                                    Hosts[host.ManufacturerDescription][host.HostMacAddress] = host;
 
                                     if (DateTime.Now > lastUpdateTime.AddSeconds(UpdateIntervalSeconds))
                                     {
@@ -176,6 +186,18 @@ namespace PassiveAggressor.Network
             lastUpdateTime = DateTime.Now;
         }
 
+        #region Passthroughs
+        /// <summary>
+        /// Return the resource name indicating a PNG file containing the icon for this manufacturer name.
+        /// Will return a sensible default icon if an icon is not available.
+        /// </summary>
+        /// <param name="mfr"></param>
+        /// <returns></returns>
+        public string GetIconResourceNameForMfr(string mfr)
+        {
+            return mfrData.GetIconResourceNameForMfr(mfr);
+        }
+
         /// <summary>
         /// Get the user-set nickname for the given MAC address, or empty string if none set.
         /// </summary>
@@ -194,6 +216,6 @@ namespace PassiveAggressor.Network
         {
             nickData.SetNicknameForMac(mac, nickname);
         }
-
+        #endregion Passthroughs
     }
 }
