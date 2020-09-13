@@ -20,17 +20,19 @@ namespace PassiveAggressor.UI
     /// </summary>
     public partial class HostGroup : UserControl
     {
+        private string mfrDesc;
         public HostGroup(string mfrDesc, string iconResourceName)
         {
             InitializeComponent();
 
-            labelMfrString.Content = mfrDesc;
+            this.mfrDesc = mfrDesc;
             imageMfrIcon.Source = LoadImage(iconResourceName);
         }
 
         public void UpdateVisibleHostsList( Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> Hosts)
         {
-            expanderHostsList.Header = Hosts.Count.ToString() + " hosts visible";
+            //TODO: don't update the controls unless the expander is expanded
+            labelMfrString.Content = mfrDesc + "\n(" + Hosts.Count.ToString() + " hosts)";
             foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> host in Hosts)
             {
                 // Find where this host would go in the list.  If it's not there, insert it.
@@ -139,6 +141,16 @@ namespace PassiveAggressor.UI
             }
 
             return bitmap;
+        }
+
+        private void expanderHostsList_Collapsed(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void expanderHostsList_Expanded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
