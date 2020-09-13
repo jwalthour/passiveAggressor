@@ -53,7 +53,7 @@ namespace PassiveAggressor.UI
                 labelMfrString.Content = mfrName;
                 string mfrIconResource = Network.ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
                 imageMfrIcon.Source = LoadImage(mfrIconResource);
-                string nickname = Network.NicknameData.instance.GetNicknameForMac(_mac);
+                string nickname = NicknameData.instance.GetNicknameForMac(_mac);
                 labelNickname.Text = nickname;
             }
         }

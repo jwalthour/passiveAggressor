@@ -56,7 +56,6 @@ namespace PassiveAggressor.Network
         private BackgroundWorker packetProcessorWorker;
 
         private ManufacturerData mfrData = new ManufacturerData();
-        private NicknameData nickData = new NicknameData();
 
         /// <summary>
         /// Open interfaces for listening, load manufacturer lookup file, load nickname data
@@ -64,7 +63,6 @@ namespace PassiveAggressor.Network
         public void Initialize()
         {
             mfrData.LoadMfrData();
-            nickData.LoadNicknameData();
             InitializeInterfaces();
         }
 
@@ -198,24 +196,6 @@ namespace PassiveAggressor.Network
             return mfrData.GetIconResourceNameForMfr(mfr);
         }
 
-        /// <summary>
-        /// Get the user-set nickname for the given MAC address, or empty string if none set.
-        /// </summary>
-        /// <param name="mac"></param>
-        /// <returns>the user-set nickname for the given MAC address, or empty string if none set.</returns>
-        public string GetNicknameForMac(PcapDotNet.Packets.Ethernet.MacAddress mac)
-        {
-            return nickData.GetNicknameForMac(mac);
-        }
-        /// <summary>
-        /// Set nickname.  Set to an empty string to delete assignment.
-        /// </summary>
-        /// <param name="mac"></param>
-        /// <param name="nickname"></param>
-        public void SetNicknameForMac(PcapDotNet.Packets.Ethernet.MacAddress mac, string nickname)
-        {
-            nickData.SetNicknameForMac(mac, nickname);
-        }
         #endregion Passthroughs
     }
 }

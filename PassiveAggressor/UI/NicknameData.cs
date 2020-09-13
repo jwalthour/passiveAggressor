@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PassiveAggressor.Network
+namespace PassiveAggressor.UI
 {
     class NicknameData
     {
@@ -32,11 +32,27 @@ namespace PassiveAggressor.Network
         /// </summary>
         private const string NICK_HDR = "Host nickname string";
 
+        private static NicknameData _instance = null;
+        /// <summary>
+        /// Singleton instance of this class.
+        /// Make sure to call LoadMfrData() to make this class useful.
+        /// </summary>
+        public static NicknameData instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new NicknameData();
+                }
+                return _instance;
+            }
+        }
 
         /// <summary>
         /// Singleton class; use NicknameData.instance instead
         /// </summary>
-        public NicknameData()
+        private NicknameData()
         {
 
         }
