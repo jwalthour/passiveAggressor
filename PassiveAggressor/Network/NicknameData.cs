@@ -33,27 +33,10 @@ namespace PassiveAggressor.Network
         private const string NICK_HDR = "Host nickname string";
 
 
-        private static NicknameData _instance = null;
-        /// <summary>
-        /// Singleton instance of this class.
-        /// Make sure to call LoadMfrData() to make this class useful.
-        /// </summary>
-        public static NicknameData instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new NicknameData();
-                }
-                return _instance;
-            }
-        }
-
         /// <summary>
         /// Singleton class; use NicknameData.instance instead
         /// </summary>
-        private NicknameData()
+        public NicknameData()
         {
 
         }

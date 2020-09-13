@@ -20,27 +20,7 @@ namespace PassiveAggressor.Network
         private const string UNKNOWN_MFR_ICON_RESOURCE = "PassiveAggressor.data.unknownMfr.png";
         private const string MFR_ICON_RESOURCE_PREFIX = "PassiveAggressor.data.mfrIcons.";
 
-        private static ManufacturerData _instance = null;
-        /// <summary>
-        /// Singleton instance of this class.
-        /// Make sure to call LoadMfrData() to make this class useful.
-        /// </summary>
-        public static ManufacturerData instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ManufacturerData();
-                }
-                return _instance;
-            }
-        }
-
-        /// <summary>
-        /// Singleton class; use ManufacturerData.instance instead
-        /// </summary>
-        private ManufacturerData()
+        public ManufacturerData()
         {
 
         }

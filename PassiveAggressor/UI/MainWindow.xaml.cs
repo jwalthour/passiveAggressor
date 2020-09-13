@@ -128,9 +128,7 @@ namespace PassiveAggressor
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            nm.InitializeInterfaces();
-            Network.ManufacturerData.instance.LoadMfrData();
-            Network.NicknameData.instance.LoadNicknameData();
+            nm.Initialize();
             PopulateInterfaceList();
         }
 
