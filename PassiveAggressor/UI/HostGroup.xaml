@@ -10,11 +10,11 @@
             <Expander.Header>
                 <StackPanel Orientation="Horizontal">
                     <Image Grid.RowSpan="2" Grid.Column="0" x:Name="imageMfrIcon" HorizontalAlignment="Left" Height="50" Margin="5,5,0,0" VerticalAlignment="Top" Width="50" Source="/PassiveAggressor;component/data/unknownMfr.png"/>
-                    <Label Grid.Column="1" Grid.Row="0" x:Name="labelMfrString" Content="Manufacturer name" VerticalAlignment="Center" />
+                    <Label Grid.Column="1" Grid.Row="0" x:Name="labelMfrString" Content="Manufacturer name and host count" VerticalAlignment="Center" />
                 </StackPanel>
             </Expander.Header>
-
             <StackPanel Background="#FFE5E5E5" x:Name="stackHostList"/>
+
         </Expander>
 
     </Grid>

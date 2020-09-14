@@ -15,6 +15,7 @@ namespace PassiveAggressor
     {
         private Network.NetworkMonitor nm = new Network.NetworkMonitor();
         private SortedDictionary<string, HostGroup> hostGroupControls = new SortedDictionary<string, HostGroup>();
+        private HostGroup expandedHostGroup = null;
 
         public MainWindow()
         {
@@ -56,6 +57,7 @@ namespace PassiveAggressor
                 else
                 {
                     hostGroupControl = new HostGroup(hostGroup.Key, nm.GetIconResourceNameForMfr(hostGroup.Key));
+                    hostGroupControl.UserExpandedHost = UserExpandedHostGroup;
                     hostGroupControls.Add(hostGroup.Key, hostGroupControl);
                     // TODO: sort alphabetically.  Might be easier if we make hostGroupControls a sorted list or something so we can do stackHostList.Children.Insert
                     stackHostList.Children.Add(hostGroupControl);
@@ -72,6 +74,18 @@ namespace PassiveAggressor
             //}
         }
 
+        /// <summary>
+        /// Called when the user clicks the "expand" button on the host list for a particular manufacturer
+        /// </summary>
+        /// <param name="justExpanded"></param>
+        private void UserExpandedHostGroup(HostGroup justExpanded)
+        {
+            if(expandedHostGroup != null && expandedHostGroup != justExpanded)
+            {
+                expandedHostGroup.CollapseHostList();
+            }
+            expandedHostGroup = justExpanded;
+        }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {

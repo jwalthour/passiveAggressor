@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PassiveAggressor.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="65" Height="65" Width="428.4">
+             d:DesignHeight="65" Height="65" >
     <Grid Background="White" Margin="4,4,4,0">
         <Label x:Name="labelIpV4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="4,5,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelMacAddress" Content="AA:BB:CC:DD:EE" HorizontalAlignment="Left" Margin="4,32,0,0" VerticalAlignment="Top"/>

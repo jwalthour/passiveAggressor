@@ -21,6 +21,15 @@ namespace PassiveAggressor.UI
     public partial class HostGroup : UserControl
     {
         private string mfrDesc;
+        private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> hosts;
+        
+        /// <summary>
+        /// WIll be called when the user expands this group
+        /// </summary>
+        /// <param name="justClicked"></param>
+        public delegate void UserExpandedHostGroup_d(HostGroup justClicked);
+        public UserExpandedHostGroup_d UserExpandedHost = null;
+
         public HostGroup(string mfrDesc, string iconResourceName)
         {
             InitializeComponent();
@@ -29,55 +38,20 @@ namespace PassiveAggressor.UI
             imageMfrIcon.Source = LoadImage(iconResourceName);
         }
 
-        public void UpdateVisibleHostsList( Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> Hosts)
+        public void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> Hosts)
         {
-            //TODO: don't update the controls unless the expander is expanded
+            hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>(Hosts);
             labelMfrString.Content = mfrDesc + "\n(" + Hosts.Count.ToString() + " hosts)";
-            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> host in Hosts)
-            {
-                // Find where this host would go in the list.  If it's not there, insert it.
-                int i = 0;
-                bool shouldAdd = stackHostList.Children.Count == 0;
-                UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value);
-                newHostControl.NicknameUpdated += SortHostList;
-                foreach (object control in stackHostList.Children)
-                {
-                    UI.VisibleHost existingHostControl = control as UI.VisibleHost;
-                    int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
-                    if (sortOrder == 0)
-                    {
-                        // This host already exists in the list
-                        // TODO: if we start displaying "last seen" value, update that
-                        shouldAdd = false;
-                        break;
-                    }
-                    else if (sortOrder < 0)
-                    {
-                        // This host goes somewhere after the existing control.
-                        // Keep going
-                        shouldAdd = true;
-                    }
-                    else if (sortOrder > 0)
-                    {
-                        // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
-                        shouldAdd = true;
-                        break;
-                    }
-                    i++;
-                }
 
-                if (shouldAdd)
-                {
-                    if (i < stackHostList.Children.Count)
-                    {
-                        stackHostList.Children.Insert(i, newHostControl);
-                    }
-                    else
-                    {
-                        stackHostList.Children.Add(newHostControl);
-                    }
-                }
+            if (expanderHostsList.IsExpanded)
+            {
+                PopulateHostList();
             }
+        }
+
+        public void CollapseHostList()
+        {
+            expanderHostsList.IsExpanded = false;
         }
 
         /// <summary>
@@ -150,7 +124,57 @@ namespace PassiveAggressor.UI
 
         private void expanderHostsList_Expanded(object sender, RoutedEventArgs e)
         {
+            UserExpandedHost?.Invoke(this);
+            PopulateHostList();
+        }
 
+        private void PopulateHostList()
+        {
+            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> host in hosts)
+            {
+                // Find where this host would go in the list.  If it's not there, insert it.
+                int i = 0;
+                bool shouldAdd = stackHostList.Children.Count == 0;
+                UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value);
+                newHostControl.NicknameUpdated += SortHostList;
+                foreach (object control in stackHostList.Children)
+                {
+                    UI.VisibleHost existingHostControl = control as UI.VisibleHost;
+                    int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
+                    if (sortOrder == 0)
+                    {
+                        // This host already exists in the list
+                        // TODO: if we start displaying "last seen" value, update that
+                        shouldAdd = false;
+                        break;
+                    }
+                    else if (sortOrder < 0)
+                    {
+                        // This host goes somewhere after the existing control.
+                        // Keep going
+                        shouldAdd = true;
+                    }
+                    else if (sortOrder > 0)
+                    {
+                        // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
+                        shouldAdd = true;
+                        break;
+                    }
+                    i++;
+                }
+
+                if (shouldAdd)
+                {
+                    if (i < stackHostList.Children.Count)
+                    {
+                        stackHostList.Children.Insert(i, newHostControl);
+                    }
+                    else
+                    {
+                        stackHostList.Children.Add(newHostControl);
+                    }
+                }
+            }
         }
     }
 }
