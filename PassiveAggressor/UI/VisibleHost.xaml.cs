@@ -162,5 +162,11 @@ namespace PassiveAggressor.UI
         {
             Clipboard.SetData(DataFormats.Text, labelMacAddress.Content);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }
