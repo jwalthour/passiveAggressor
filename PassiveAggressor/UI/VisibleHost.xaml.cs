@@ -31,9 +31,9 @@ namespace PassiveAggressor.UI
         public VisibleHost(Network.ObservedHost host)
         {
             InitializeComponent();
-            labelIpV4Address.Content = host.HostIpV4Address.ToString();
+            labelIpV4Address.Text = host.HostIpV4Address.ToString();
             Mac = host.HostMacAddress;
-            labelMacAddress.Content = Mac.ToString();
+            labelMacAddress.Text = Mac.ToString();
             string nickname = NicknameData.instance.GetNicknameForMac(Mac);
             labelNickname.Text = nickname;
         }
@@ -56,12 +56,12 @@ namespace PassiveAggressor.UI
 
         private void ButtonHttp_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://" + labelIpV4Address.Content + "/");
+            System.Diagnostics.Process.Start("http://" + labelIpV4Address.Text + "/");
         }
 
         private void ButtonHttps_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://" + labelIpV4Address.Content + "/");
+            System.Diagnostics.Process.Start("https://" + labelIpV4Address.Text + "/");
         }
 
         private void ButtonSsh_Click(object sender, RoutedEventArgs e)
@@ -70,7 +70,7 @@ namespace PassiveAggressor.UI
             string puttyPath = myPath + "\\tools\\putty\\putty.exe";
             try
             {
-                System.Diagnostics.Process.Start(puttyPath, (string)labelIpV4Address.Content);
+                System.Diagnostics.Process.Start(puttyPath, (string)labelIpV4Address.Text);
             }
             catch (Exception ex)
             {
@@ -80,12 +80,12 @@ namespace PassiveAggressor.UI
 
         private void ButtonSftp_Click(object sender, RoutedEventArgs e)
         {
-            LaunchFileZilla((string)labelIpV4Address.Content, "sftp");
+            LaunchFileZilla((string)labelIpV4Address.Text, "sftp");
         }
 
         private void ButtonFtp_Click(object sender, RoutedEventArgs e)
         {
-            LaunchFileZilla((string)labelIpV4Address.Content, "sftp");
+            LaunchFileZilla((string)labelIpV4Address.Text, "sftp");
         }
 
         /// <summary>
@@ -155,18 +155,14 @@ namespace PassiveAggressor.UI
 
         private void buttonCopyIpAddress_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetData(DataFormats.Text, labelIpV4Address.Content);
+            Clipboard.SetData(DataFormats.Text, labelIpV4Address.Text);
         }
 
         private void buttonCopyMacAddress_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetData(DataFormats.Text, labelMacAddress.Content);
+            Clipboard.SetData(DataFormats.Text, labelMacAddress.Text);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
 
     }
 }

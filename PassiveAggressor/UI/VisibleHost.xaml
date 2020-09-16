@@ -4,15 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PassiveAggressor.UI"
-             mc:Ignorable="d" Height="31">
-    <Grid Background="White" Margin="4,4,4,0">
-        <Label x:Name="labelIpV4Address" Content="111.222.333.444" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top" Width="110" FontFamily="Consolas"/>
-        <Label x:Name="labelMacAddress" Content="AA:BB:CC:DD:EE:FF" HorizontalAlignment="Left" Margin="105,1,0,0" VerticalAlignment="Top" Width="127" FontFamily="Consolas"/>
-        <TextBox x:Name="textBoxEnterNickname" Height="23" Margin="328,5,25.4,0" TextWrapping="Wrap" VerticalAlignment="Top" TextAlignment="Right" Text="" ToolTip="Enter a nickname here" FontWeight="Bold" KeyDown="TextBoxEnterNickname_KeyDown" LostFocus="TextBoxEnterNickname_LostFocus" Visibility="Hidden"/>
-        <TextBlock x:Name="labelNickname" Height="23" Margin="328,5,25.4,0" VerticalAlignment="Top" TextAlignment="Right" ToolTip="Nickname for this host" Visibility="Visible" FontWeight="Bold">Nickname</TextBlock>
-        <Button x:Name="buttonSaveNickname" Content="💾" Margin="0,2,0,0" VerticalAlignment="Top" Height="22" ToolTip="Apply nickname" Click="ButtonSaveNickname_Click" HorizontalAlignment="Right" Width="23" Visibility="Hidden"/>
-        <Button x:Name="buttonEditNickname" Content="✏️" Margin="0,2,0,0" VerticalAlignment="Top" Height="22" Visibility="Visible" ToolTip="Edit nickname for this host (nickname will be associated with this MAC address)" Click="ButtonEditNickname_Click" HorizontalAlignment="Right" Width="23"/>
-        <Menu HorizontalAlignment="Left" Height="21" Margin="226,3,0,0" VerticalAlignment="Top" Width="102">
+             mc:Ignorable="d" Height="25" >
+    <Grid Background="White" Margin="1,1,1,0">
+
+        <TextBlock x:Name="labelIpV4Address" Text="111.222.333.444" HorizontalAlignment="Left" Margin="139,4,0,0" VerticalAlignment="Top" Width="110" FontFamily="Consolas" Grid.RowSpan="2" Height="17" FontSize="13"/>
+        <TextBlock x:Name="labelMacAddress" Text="AA:BB:CC:DD:EE:FF" HorizontalAlignment="Left" Margin="2,4,0,0" VerticalAlignment="Top" Width="123" FontFamily="Consolas" Grid.RowSpan="2" Height="17" FontSize="13"/>
+        <TextBlock x:Name="labelNickname" Height="17" Margin="240,4,166.8,0" VerticalAlignment="Top" TextAlignment="Right" ToolTip="Nickname for this host" Visibility="Visible" FontWeight="Bold" Grid.RowSpan="2">Nickname</TextBlock>
+        <TextBox x:Name="textBoxEnterNickname" Height="17" Margin="240,4,166.8,0" TextWrapping="Wrap" VerticalAlignment="Top" TextAlignment="Right" Text="" ToolTip="Enter a nickname here" FontWeight="Bold" KeyDown="TextBoxEnterNickname_KeyDown" LostFocus="TextBoxEnterNickname_LostFocus" Visibility="Hidden" RenderTransformOrigin="0.518,1.251" />
+        <Button x:Name="buttonEditNickname" Content="Nickname" Margin="0,2,106,0" VerticalAlignment="Top" Visibility="Visible" ToolTip="Edit nickname for this host (nickname will be associated with this MAC address)" Click="ButtonEditNickname_Click" HorizontalAlignment="Right" Height="21" />
+        <Button x:Name="buttonSaveNickname" Content="Save" Margin="0,2,106,0" VerticalAlignment="Top" ToolTip="Apply nickname" Click="ButtonSaveNickname_Click" HorizontalAlignment="Right" Visibility="Hidden" Height="21"  Width="56" />
+        <Menu Height="19" Margin="0,3,0,0" VerticalAlignment="Top" Grid.RowSpan="2" HorizontalAlignment="Right" Width="102">
             <MenuItem Header="Copy">
                 <MenuItem Header="IP address to clipboard" Click="buttonCopyIpAddress_Click"/>
                 <MenuItem Header="MAC address to clipboard" Click="buttonCopyMacAddress_Click"/>
@@ -21,7 +22,7 @@
                 <MenuItem Header="HTTP (browser)" Click="ButtonHttp_Click"/>
                 <MenuItem Header="HTTPS (browser)" Click="ButtonHttps_Click"/>
                 <MenuItem Header="SSH (PuTTY)" Click="ButtonSsh_Click" />
-                <MenuItem Header="FTP (PuTTY)" Click="ButtonFtp_Click" />
+                <MenuItem Header="FTP (FileZilla)" Click="ButtonFtp_Click" />
                 <MenuItem Header="SFTP (FileZilla)" Click="ButtonSftp_Click" />
             </MenuItem>
         </Menu>
