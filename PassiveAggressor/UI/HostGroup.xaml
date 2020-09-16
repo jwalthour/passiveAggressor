@@ -13,7 +13,7 @@
                     <Label Grid.Column="1" Grid.Row="0" x:Name="labelMfrString" Content="Manufacturer name and host count" VerticalAlignment="Center" />
                 </StackPanel>
             </Expander.Header>
-            <StackPanel Background="#FFE5E5E5" x:Name="stackHostList"/>
+            <StackPanel Background="#FF626262" x:Name="stackHostList"/>
 
         </Expander>
 

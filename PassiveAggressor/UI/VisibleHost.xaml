@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PassiveAggressor.UI"
-             mc:Ignorable="d" Height="25" >
+             mc:Ignorable="d" Height="25"  d:DesignWidth="600">
     <Grid Background="White" Margin="1,1,1,0">
 
         <TextBlock x:Name="labelIpV4Address" Text="111.222.333.444" HorizontalAlignment="Left" Margin="139,4,0,0" VerticalAlignment="Top" Width="110" FontFamily="Consolas" Grid.RowSpan="2" Height="17" FontSize="13"/>
