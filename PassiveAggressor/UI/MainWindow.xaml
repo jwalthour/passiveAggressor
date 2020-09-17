@@ -13,7 +13,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <ScrollViewer Margin="0,26,0,0" Background="#FF626262" Grid.Column="1">
-            <StackPanel  x:Name="stackHostList">
+            <StackPanel  x:Name="stackHostGroupList">
                 <Label FontStyle="Italic">Listening for hosts...</Label>
 
             </StackPanel>

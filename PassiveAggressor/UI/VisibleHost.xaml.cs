@@ -31,8 +31,9 @@ namespace PassiveAggressor.UI
         public VisibleHost(Network.ObservedHost host)
         {
             InitializeComponent();
-            labelIpV4Address.Text = host.HostIpV4Address.ToString();
+            IpV4Address = host.HostIpV4Address;
             Mac = host.HostMacAddress;
+            MacInt = Mac.ToValue();
             labelMacAddress.Text = Mac.ToString();
             string nickname = NicknameData.instance.GetNicknameForMac(Mac);
             labelNickname.Text = nickname;
@@ -42,6 +43,22 @@ namespace PassiveAggressor.UI
         /// Set will also update the GUI fields that are based on the MAC address
         /// </summary>
         public MacAddress Mac { get; private set; }
+
+        public ulong MacInt { get; private set; }
+
+        private PcapDotNet.Packets.IpV4.IpV4Address ipV4Address;
+        public PcapDotNet.Packets.IpV4.IpV4Address IpV4Address
+        {
+            get
+            {
+                return ipV4Address;
+            }
+            set
+            {
+                ipV4Address = value;
+                labelIpV4Address.Text = ipV4Address.ToString();
+            }
+        }
 
         public delegate void NicknameUpdated_d(VisibleHost sender);
         /// <summary>

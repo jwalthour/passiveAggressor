@@ -22,7 +22,8 @@ namespace PassiveAggressor.UI
     {
         public string MfrDesc { get; private set; }
         private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> hosts;
-        
+        private Dictionary<ulong, VisibleHost> hostControlsAdded = new Dictionary<ulong, VisibleHost>();
+
         /// <summary>
         /// WIll be called when the user expands this group
         /// </summary>
@@ -127,54 +128,53 @@ namespace PassiveAggressor.UI
             UserExpandedHost?.Invoke(this);
             PopulateHostList();
         }
-
+        /// <summary>
+        /// Check hosts that have been seen and update hosts list
+        /// </summary>
         private void PopulateHostList()
         {
             foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> host in hosts)
             {
-                // Find where this host would go in the list.  If it's not there, insert it.
-                int i = 0;
-                bool shouldAdd = stackHostList.Children.Count == 0;
-                UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value);
-                newHostControl.NicknameUpdated += SortHostList;
-                foreach (object control in stackHostList.Children)
+                ulong macInt = host.Key.ToValue();
+                if(hostControlsAdded.ContainsKey(macInt))
                 {
-                    UI.VisibleHost existingHostControl = control as UI.VisibleHost;
-                    int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
-                    if (sortOrder == 0)
-                    {
-                        // This host already exists in the list
-                        // TODO: if we start displaying "last seen" value, update that
-                        shouldAdd = false;
-                        break;
-                    }
-                    else if (sortOrder < 0)
-                    {
-                        // This host goes somewhere after the existing control.
-                        // Keep going
-                        shouldAdd = true;
-                    }
-                    else if (sortOrder > 0)
-                    {
-                        // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
-                        shouldAdd = true;
-                        break;
-                    }
-                    i++;
-                }
-
-                if (shouldAdd)
+                    // IP address may have changed; update it just in case
+                    hostControlsAdded[macInt].IpV4Address = host.Value.HostIpV4Address;
+                } else
                 {
-                    if (i < stackHostList.Children.Count)
-                    {
-                        stackHostList.Children.Insert(i, newHostControl);
-                    }
-                    else
-                    {
-                        stackHostList.Children.Add(newHostControl);
-                    }
+                    // Need to add to list
+                    int insertIdx = GetIndexAtWhichToInserHost(macInt);
+                    VisibleHost hostControl = new VisibleHost(host.Value);
+                    stackHostList.Children.Insert(insertIdx, hostControl);
+                    hostControlsAdded.Add(macInt, hostControl);
                 }
             }
+        }
+
+        /// <summary>
+        /// Find the index at which to insert a host that is not already in the list.
+        /// Based on a binary search (with the assumption that host is not present).
+        /// </summary>
+        /// <param name="macInt">Integer form of mac address of host</param>
+        /// <returns>Index at which to insert into </returns>
+        private int GetIndexAtWhichToInserHost(ulong macInt)
+        {
+            int lowIdx = 0;
+            int highIdx = stackHostList.Children.Count - 1;
+            while (lowIdx <= highIdx)
+            {
+                int midIdx = (lowIdx + highIdx) / 2;
+                ulong midMacInt = (stackHostList.Children[midIdx] as VisibleHost).MacInt;
+                if (midMacInt > macInt)
+                {
+                    highIdx = midIdx - 1;
+                }
+                else // We know they aren't equal
+                {
+                    lowIdx = midIdx + 1;
+                }
+            }
+            return lowIdx;
         }
     }
 }

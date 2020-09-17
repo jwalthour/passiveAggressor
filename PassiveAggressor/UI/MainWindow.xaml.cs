@@ -43,9 +43,9 @@ namespace PassiveAggressor
         private void UpdateVisibleHostsList(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hosts)
         {
             // If we still have that label, remove it
-            if (stackHostList.Children.Count > 0 && stackHostList.Children[0] is Label)
+            if (stackHostGroupList.Children.Count > 0 && stackHostGroupList.Children[0] is Label)
             {
-                stackHostList.Children.Clear();
+                stackHostGroupList.Children.Clear();
             }
             foreach (KeyValuePair<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hostGroup in hosts)
             {
@@ -62,7 +62,7 @@ namespace PassiveAggressor
                     // Use a binary search
                     int insertIdx = GetIndexAtWhichToInsertManufacturer(hostGroup.Key);
                     hostGroupControls.Add(hostGroup.Key, hostGroupControl);
-                    stackHostList.Children.Insert(insertIdx, hostGroupControl);
+                    stackHostGroupList.Children.Insert(insertIdx, hostGroupControl);
                 }
 
                 hostGroupControl.UpdateVisibleHostsList(hostGroup.Value);
@@ -72,7 +72,7 @@ namespace PassiveAggressor
             //hostControls.Sort(CompareHostsForList);
             //foreach (UI.VisibleHost hostControl in hostControls)
             //{
-            //    stackHostList.Children.Add(hostControl);
+            //    stackHostGroupList.Children.Add(hostControl);
             //}
         }
 
@@ -85,11 +85,11 @@ namespace PassiveAggressor
         private int GetIndexAtWhichToInsertManufacturer(string mfr)
         {
             int lowIdx = 0;
-            int highIdx = stackHostList.Children.Count - 1;
+            int highIdx = stackHostGroupList.Children.Count - 1;
             while (lowIdx <= highIdx)
             {
                 int midIdx = (lowIdx + highIdx) / 2;
-                string midMfr = (stackHostList.Children[midIdx] as HostGroup).MfrDesc;
+                string midMfr = (stackHostGroupList.Children[midIdx] as HostGroup).MfrDesc;
                 if (midMfr.CompareTo(mfr) > 0)
                 {
                     highIdx = midIdx - 1;
@@ -167,7 +167,7 @@ namespace PassiveAggressor
         private void ButtonClearHosts_Click(object sender, RoutedEventArgs e)
         {
             nm.ClearHostsList();
-            stackHostList.Children.Clear();
+            stackHostGroupList.Children.Clear();
         }
     }
 }
