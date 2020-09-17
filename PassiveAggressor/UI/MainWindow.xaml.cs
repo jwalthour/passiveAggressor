@@ -14,7 +14,7 @@ namespace PassiveAggressor
     public partial class MainWindow : Window
     {
         private Network.NetworkMonitor nm = new Network.NetworkMonitor();
-        private SortedDictionary<string, HostGroup> hostGroupControls = new SortedDictionary<string, HostGroup>();
+        private Dictionary<string, HostGroup> hostGroupControls = new Dictionary<string, HostGroup>();
         private HostGroup expandedHostGroup = null;
 
         public MainWindow()
@@ -56,11 +56,13 @@ namespace PassiveAggressor
                 } 
                 else
                 {
+                    // This manufacturer isn't in the list; figure out where to put it
                     hostGroupControl = new HostGroup(hostGroup.Key, nm.GetIconResourceNameForMfr(hostGroup.Key));
                     hostGroupControl.UserExpandedHost = UserExpandedHostGroup;
+                    // Use a binary search
+                    int insertIdx = GetIndexAtWhichToInsertManufacturer(hostGroup.Key);
                     hostGroupControls.Add(hostGroup.Key, hostGroupControl);
-                    // TODO: sort alphabetically.  Might be easier if we make hostGroupControls a sorted list or something so we can do stackHostList.Children.Insert
-                    stackHostList.Children.Add(hostGroupControl);
+                    stackHostList.Children.Insert(insertIdx, hostGroupControl);
                 }
 
                 hostGroupControl.UpdateVisibleHostsList(hostGroup.Value);
@@ -72,6 +74,32 @@ namespace PassiveAggressor
             //{
             //    stackHostList.Children.Add(hostControl);
             //}
+        }
+
+        /// <summary>
+        /// Find the index at which to insert a manufacturer that is not already in the list.
+        /// Based on a binary search (with the assumption that mfr is not present).
+        /// </summary>
+        /// <param name="mfr">Name of a manufacturer known not to be present</param>
+        /// <returns>Index at which to insert into </returns>
+        private int GetIndexAtWhichToInsertManufacturer(string mfr)
+        {
+            int lowIdx = 0;
+            int highIdx = stackHostList.Children.Count - 1;
+            while (lowIdx <= highIdx)
+            {
+                int midIdx = (lowIdx + highIdx) / 2;
+                string midMfr = (stackHostList.Children[midIdx] as HostGroup).MfrDesc;
+                if (midMfr.CompareTo(mfr) > 0)
+                {
+                    highIdx = midIdx - 1;
+                }
+                else // We know they aren't equal
+                {
+                    lowIdx = midIdx + 1;
+                }
+            }
+            return lowIdx;
         }
 
         /// <summary>

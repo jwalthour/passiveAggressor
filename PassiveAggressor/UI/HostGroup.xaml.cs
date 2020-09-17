@@ -20,7 +20,7 @@ namespace PassiveAggressor.UI
     /// </summary>
     public partial class HostGroup : UserControl
     {
-        private string mfrDesc;
+        public string MfrDesc { get; private set; }
         private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> hosts;
         
         /// <summary>
@@ -34,14 +34,14 @@ namespace PassiveAggressor.UI
         {
             InitializeComponent();
 
-            this.mfrDesc = mfrDesc;
+            MfrDesc = mfrDesc;
             imageMfrIcon.Source = LoadImage(iconResourceName);
         }
 
         public void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost> Hosts)
         {
             hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>(Hosts);
-            labelMfrString.Content = mfrDesc + "\n(" + Hosts.Count.ToString() + " hosts)";
+            labelMfrString.Content = MfrDesc + "\n(" + Hosts.Count.ToString() + " hosts)";
 
             if (expanderHostsList.IsExpanded)
             {
