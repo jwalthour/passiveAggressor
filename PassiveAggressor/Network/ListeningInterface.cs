@@ -6,7 +6,7 @@ using PcapDotNet.Core;
 using PcapDotNet.Packets;
 using System.Net.NetworkInformation;
 
-namespace PassiveAggressor
+namespace PassiveAggressor.Network
 {
     /// <summary>
     /// The objects used to manage one interface

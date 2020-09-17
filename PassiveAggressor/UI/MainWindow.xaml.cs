@@ -1,18 +1,11 @@
-﻿using System;
+﻿using PassiveAggressor.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 namespace PassiveAggressor
 {
     /// <summary>
@@ -20,7 +13,10 @@ namespace PassiveAggressor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private NetworkMonitor nm = new NetworkMonitor();
+        private Network.NetworkMonitor nm = new Network.NetworkMonitor();
+        private Dictionary<string, HostGroup> hostGroupControls = new Dictionary<string, HostGroup>();
+        private HostGroup expandedHostGroup = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -33,99 +29,96 @@ namespace PassiveAggressor
             nm.HostListChanged += Nm_HostListChanged;
         }
 
-        private void Nm_HostListChanged(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
+        private void Nm_HostListChanged(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hosts)
         {
             // Run it on the GUI thread
-            Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hostsShallowCopy = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>(hosts);
+            Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hostsShallowCopy = new Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>>(hosts);
             Dispatcher.BeginInvoke(new Action(() => UpdateVisibleHostsList(hostsShallowCopy)));
         }
 
-        private void UpdateVisibleHostsList(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts)
+        /// <summary>
+        /// Called whenever the NetworkMonitor reports a chang ein the hosts list.  Updates the host list in the GUI.
+        /// </summary>
+        /// <param name="hosts"></param>
+        private void UpdateVisibleHostsList(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hosts)
         {
-            foreach (KeyValuePair<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> host in hosts)
+            // If we still have that label, remove it
+            if (stackHostGroupList.Children.Count > 0 && stackHostGroupList.Children[0] is Label)
             {
-
-                // If we still have that label, remove it
-                if (stackHostList.Children.Count > 0 && stackHostList.Children[0] is Label)
+                stackHostGroupList.Children.Clear();
+            }
+            foreach (KeyValuePair<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, Network.ObservedHost>> hostGroup in hosts)
+            {
+                HostGroup hostGroupControl = null;
+                if(hostGroupControls.ContainsKey(hostGroup.Key))
                 {
-                    stackHostList.Children.Clear();
+                    hostGroupControl = hostGroupControls[hostGroup.Key];
+                } 
+                else
+                {
+                    // This manufacturer isn't in the list; figure out where to put it
+                    hostGroupControl = new HostGroup(hostGroup.Key, nm.GetIconResourceNameForMfr(hostGroup.Key));
+                    hostGroupControl.UserExpandedHost = UserExpandedHostGroup;
+                    // Use a binary search
+                    int insertIdx = GetIndexAtWhichToInsertManufacturer(hostGroup.Key);
+                    hostGroupControls.Add(hostGroup.Key, hostGroupControl);
+                    stackHostGroupList.Children.Insert(insertIdx, hostGroupControl);
                 }
 
-                // Find where this host would go in the list.  If it's not there, insert it.
-                int i = 0;
-                bool shouldAdd = stackHostList.Children.Count == 0;
-                UI.VisibleHost newHostControl = new UI.VisibleHost(host.Value.HostMacAddress, host.Value.HostIpV4Address);
-                newHostControl.NicknameUpdated += UserSetAHostNickname;
-                foreach (object control in stackHostList.Children)
-                {
-                    UI.VisibleHost existingHostControl = control as UI.VisibleHost;
-                    int sortOrder = CompareHostsForList(existingHostControl, newHostControl);
-                    if (sortOrder == 0)
-                    {
-                        // This host already exists in the list
-                        // TODO: if we start displaying "last seen" value, update that
-                        shouldAdd = false;
-                        break;
-                    }
-                    else if (sortOrder < 0)
-                    {
-                        // This host goes somewhere after the existing control.
-                        // Keep going
-                        shouldAdd = true;
-                    }
-                    else if (sortOrder > 0)
-                    {
-                        // We found the first existing host that goes after this host, indicating we've found the spot in the list to insert this host
-                        shouldAdd = true;
-                        break;
-                    }
-                    i++;
-                }
+                hostGroupControl.UpdateVisibleHostsList(hostGroup.Value);
 
-                if (shouldAdd)
-                {
-                    if (i < stackHostList.Children.Count)
-                    {
-                        stackHostList.Children.Insert(i, newHostControl);
-                    }
-                    else
-                    {
-                        stackHostList.Children.Add(newHostControl);
-                    }
-                }
             }
 
             //hostControls.Sort(CompareHostsForList);
             //foreach (UI.VisibleHost hostControl in hostControls)
             //{
-            //    stackHostList.Children.Add(hostControl);
+            //    stackHostGroupList.Children.Add(hostControl);
             //}
         }
 
         /// <summary>
-        /// Called whenever an event informs us the user has updated (edited, added, or deleted) a host nickname
+        /// Find the index at which to insert a manufacturer that is not already in the list.
+        /// Based on a binary search (with the assumption that mfr is not present).
         /// </summary>
-        private void UserSetAHostNickname(UI.VisibleHost hostControlUpdated)
+        /// <param name="mfr">Name of a manufacturer known not to be present</param>
+        /// <returns>Index at which to insert into </returns>
+        private int GetIndexAtWhichToInsertManufacturer(string mfr)
         {
-            // Re-sort the hosts list
-            List<UI.VisibleHost> sortedHosts = new List<UI.VisibleHost>();
-            foreach(UI.VisibleHost existingHost in stackHostList.Children)
+            int lowIdx = 0;
+            int highIdx = stackHostGroupList.Children.Count - 1;
+            while (lowIdx <= highIdx)
             {
-                sortedHosts.Add(existingHost);
+                int midIdx = (lowIdx + highIdx) / 2;
+                string midMfr = (stackHostGroupList.Children[midIdx] as HostGroup).MfrDesc;
+                if (midMfr.CompareTo(mfr) > 0)
+                {
+                    highIdx = midIdx - 1;
+                }
+                else // We know they aren't equal
+                {
+                    lowIdx = midIdx + 1;
+                }
             }
-            sortedHosts.Sort(CompareHostsForList);
-            stackHostList.Children.Clear();
-            foreach(UI.VisibleHost existingHost in sortedHosts)
+            return lowIdx;
+        }
+
+        /// <summary>
+        /// Called when the user clicks the "expand" button on the host list for a particular manufacturer
+        /// </summary>
+        /// <param name="justExpanded"></param>
+        private void UserExpandedHostGroup(HostGroup justExpanded)
+        {
+            if(expandedHostGroup != null && expandedHostGroup != justExpanded)
             {
-                stackHostList.Children.Add(existingHost);
+                expandedHostGroup.CollapseHostList();
             }
+            expandedHostGroup = justExpanded;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            nm.InitializeInterfaces();
-            UI.ManufacturerData.instance.LoadMfrData();
             UI.NicknameData.instance.LoadNicknameData();
+            nm.Initialize();
             PopulateInterfaceList();
         }
 
@@ -135,10 +128,10 @@ namespace PassiveAggressor
         private void PopulateInterfaceList()
         {
             stackInterfaceList.Children.Clear();
-            List<ListeningInterface> interfaces = nm.Interfaces.Values.ToList();
+            List<Network.ListeningInterface> interfaces = nm.Interfaces.Values.ToList();
             // Put the ones with IP addresses first in the list
             interfaces.Sort(CompareInterfacesForList);
-            foreach (ListeningInterface intf in interfaces)
+            foreach (Network.ListeningInterface intf in interfaces)
             {
                 // Only show the interfaces that started up properly
                 if (intf.ErrorMessage.Length == 0)
@@ -155,7 +148,7 @@ namespace PassiveAggressor
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>-1 to indicate a should go first, 0 to indicate sameness, 1 to indicate b should go first</returns>
-        private int CompareInterfacesForList(ListeningInterface a, ListeningInterface b)
+        private int CompareInterfacesForList(Network.ListeningInterface a, Network.ListeningInterface b)
         {
             if (a.IpV4Address != null && b.IpV4Address == null)
             {
@@ -170,32 +163,11 @@ namespace PassiveAggressor
             return a.Description.CompareTo(b.Description);
         }
 
-        /// <summary>
-        /// Used for sorting hosts in hosts list
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns>-1 to indicate a should go first, 0 to indicate sameness, 1 to indicate b should go first</returns>
-        private int CompareHostsForList(UI.VisibleHost a, UI.VisibleHost b)
-        {
-            if (a.HasNickname && !b.HasNickname)
-            {
-                return -1;
-            }
-            else if (!a.HasNickname && b.HasNickname)
-            {
-                return 1;
-            }
-            else
-            {
-                return a.Mac.CompareTo(b.Mac);
-            }
-        }
 
         private void ButtonClearHosts_Click(object sender, RoutedEventArgs e)
         {
             nm.ClearHostsList();
-            stackHostList.Children.Clear();
+            stackHostGroupList.Children.Clear();
         }
     }
 }
