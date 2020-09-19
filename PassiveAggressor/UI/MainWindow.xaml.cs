@@ -168,6 +168,7 @@ namespace PassiveAggressor
         {
             nm.ClearHostsList();
             stackHostGroupList.Children.Clear();
+            hostGroupControls.Clear();
         }
     }
 }
