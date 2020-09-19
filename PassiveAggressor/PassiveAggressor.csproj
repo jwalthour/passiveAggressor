@@ -210,6 +210,17 @@
     <EmbeddedResource Include="data\mfrIcons\samsung.png" />
     <EmbeddedResource Include="data\mfrIcons\ti.png" />
     <EmbeddedResource Include="data\mfrIcons\realtek.png" />
+    <EmbeddedResource Include="data\mfrIcons\intel.png" />
+    <EmbeddedResource Include="data\mfrIcons\nintendo.png" />
+    <EmbeddedResource Include="data\mfrIcons\plugable.png" />
+    <EmbeddedResource Include="data\mfrIcons\proximwireless.png" />
+    <EmbeddedResource Include="data\mfrIcons\sony.png" />
+    <EmbeddedResource Include="data\mfrIcons\vmware.png" />
+    <EmbeddedResource Include="data\mfrIcons\xirrus.png" />
+    <EmbeddedResource Include="data\mfrIcons\belkin.png" />
+    <EmbeddedResource Include="data\mfrIcons\canon.png" />
+    <EmbeddedResource Include="data\mfrIcons\extreme.png" />
+    <EmbeddedResource Include="data\mfrIcons\fortinet.png" />
     <Content Include="tools\putty\PuTTY Licence.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
