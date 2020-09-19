@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PassiveAggressor.UI
+namespace PassiveAggressor.Network
 {
     class ManufacturerData
     {
@@ -19,32 +19,6 @@ namespace PassiveAggressor.UI
         private const string ICON_INDEX_PATH = "PassiveAggressor.data.iconForMfr.csv";
         private const string UNKNOWN_MFR_ICON_RESOURCE = "PassiveAggressor.data.unknownMfr.png";
         private const string MFR_ICON_RESOURCE_PREFIX = "PassiveAggressor.data.mfrIcons.";
-
-        private static ManufacturerData _instance = null;
-        /// <summary>
-        /// Singleton instance of this class.
-        /// Make sure to call LoadMfrData() to make this class useful.
-        /// </summary>
-        public static ManufacturerData instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ManufacturerData();
-                }
-                return _instance;
-            }
-        }
-
-        /// <summary>
-        /// Singleton class; use ManufacturerData.instance instead
-        /// </summary>
-        private ManufacturerData()
-        {
-
-        }
-
 
         private Dictionary<uint, string> mfrNameForMacPrefix = null;
         private Dictionary<string, string> iconResourceNameForMfrName = null;

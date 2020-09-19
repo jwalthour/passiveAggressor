@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using PcapDotNet.Core;
 
 
-namespace PassiveAggressor
+namespace PassiveAggressor.Network
 {
     class NetworkMonitor
     {
@@ -29,14 +29,17 @@ namespace PassiveAggressor
 
         /// <summary>
         /// Hosts that are ready to deliver (that is, confirmed to be local addresses)
+        /// Dictionary goes:
+        /// manufacturer string -> Host -> detailed host info
         /// </summary>
-        private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> Hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>();
+        //private Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> Hosts = new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>();
+        private Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>> Hosts = new Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>>();
 
         /// <summary>
         /// Event fired to indicate changes to HostList
         /// </summary>
         /// <param name="hosts">The updated list of hosts</param>
-        public delegate void HostListChanged_d(Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost> hosts);
+        public delegate void HostListChanged_d(Dictionary<string, Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>> hosts);
         /// <summary>
         /// Event fired to indicate changes to Hosts list
         /// </summary>
@@ -51,10 +54,22 @@ namespace PassiveAggressor
         /// Intended to perform any CPU-bound work to free up the other threads to listen for packets
         /// </summary>
         private BackgroundWorker packetProcessorWorker;
+
+        private ManufacturerData mfrData = new ManufacturerData();
+
+        /// <summary>
+        /// Open interfaces for listening, load manufacturer lookup file, load nickname data
+        /// </summary>
+        public void Initialize()
+        {
+            mfrData.LoadMfrData();
+            InitializeInterfaces();
+        }
+
         /// <summary>
         /// Find interfaces and open them all for listening
         /// </summary>
-        public void InitializeInterfaces()
+        private void InitializeInterfaces()
         {
             // TODO: loop through any existing interfaces and stop them
             Interfaces.Clear();
@@ -118,7 +133,15 @@ namespace PassiveAggressor
                                 if (host.IntfIpV4Address == null || host.IntfIpV4Address.SubnetContains(host.HostIpV4Address))
                                 {
                                     //TODO: if host.IntfIpV4Address == null, check if it's an internal address.  Discard WAN addresses.
-                                    Hosts[host.HostMacAddress] = host;
+
+                                    // Store in appropriate dictionaries
+                                    host.ManufacturerDescription = mfrData.GetMfrNameForMac(host.HostMacAddress);
+
+                                    if(!Hosts.ContainsKey(host.ManufacturerDescription))
+                                    {
+                                        Hosts.Add(host.ManufacturerDescription, new Dictionary<PcapDotNet.Packets.Ethernet.MacAddress, ObservedHost>());
+                                    }
+                                    Hosts[host.ManufacturerDescription][host.HostMacAddress] = host;
 
                                     if (DateTime.Now > lastUpdateTime.AddSeconds(UpdateIntervalSeconds))
                                     {
@@ -160,5 +183,19 @@ namespace PassiveAggressor
             HostListChanged?.Invoke(Hosts);
             lastUpdateTime = DateTime.Now;
         }
+
+        #region Passthroughs
+        /// <summary>
+        /// Return the resource name indicating a PNG file containing the icon for this manufacturer name.
+        /// Will return a sensible default icon if an icon is not available.
+        /// </summary>
+        /// <param name="mfr"></param>
+        /// <returns></returns>
+        public string GetIconResourceNameForMfr(string mfr)
+        {
+            return mfrData.GetIconResourceNameForMfr(mfr);
+        }
+
+        #endregion Passthroughs
     }
 }

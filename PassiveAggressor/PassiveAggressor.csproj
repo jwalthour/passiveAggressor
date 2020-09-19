@@ -117,12 +117,15 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Network\ListeningInterface.cs" />
+    <Compile Include="Network\ManufacturerData.cs" />
     <Compile Include="Network\ObservedHost.cs" />
-    <Compile Include="UI\ManufacturerData.cs" />
     <Compile Include="UI\NetworkInterface.xaml.cs">
       <DependentUpon>NetworkInterface.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\NicknameData.cs" />
+    <Compile Include="UI\HostGroup.xaml.cs">
+      <DependentUpon>HostGroup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\VisibleHost.xaml.cs">
       <DependentUpon>VisibleHost.xaml</DependentUpon>
     </Compile>
@@ -140,6 +143,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\NetworkInterface.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\HostGroup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -203,6 +210,17 @@
     <EmbeddedResource Include="data\mfrIcons\samsung.png" />
     <EmbeddedResource Include="data\mfrIcons\ti.png" />
     <EmbeddedResource Include="data\mfrIcons\realtek.png" />
+    <EmbeddedResource Include="data\mfrIcons\intel.png" />
+    <EmbeddedResource Include="data\mfrIcons\nintendo.png" />
+    <EmbeddedResource Include="data\mfrIcons\plugable.png" />
+    <EmbeddedResource Include="data\mfrIcons\proximwireless.png" />
+    <EmbeddedResource Include="data\mfrIcons\sony.png" />
+    <EmbeddedResource Include="data\mfrIcons\vmware.png" />
+    <EmbeddedResource Include="data\mfrIcons\xirrus.png" />
+    <EmbeddedResource Include="data\mfrIcons\belkin.png" />
+    <EmbeddedResource Include="data\mfrIcons\canon.png" />
+    <EmbeddedResource Include="data\mfrIcons\extreme.png" />
+    <EmbeddedResource Include="data\mfrIcons\fortinet.png" />
     <Content Include="tools\putty\PuTTY Licence.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

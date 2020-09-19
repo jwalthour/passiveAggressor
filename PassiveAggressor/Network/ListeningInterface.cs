@@ -6,7 +6,7 @@ using PcapDotNet.Core;
 using PcapDotNet.Packets;
 using System.Net.NetworkInformation;
 
-namespace PassiveAggressor
+namespace PassiveAggressor.Network
 {
     /// <summary>
     /// The objects used to manage one interface
@@ -101,7 +101,7 @@ namespace PassiveAggressor
                 else
                 {
                     monitorWorker = new BackgroundWorker();
-                    monitorWorker.DoWork += processPackets;
+                    monitorWorker.DoWork += listen;
                     monitorWorker.WorkerSupportsCancellation = true;
                     monitorWorker.WorkerReportsProgress = false;
                     monitorWorker.RunWorkerAsync();
@@ -121,7 +121,7 @@ namespace PassiveAggressor
         /// </summary>
         /// <param name="sender">Assumed to be the parent BackgroundWorker object</param>
         /// <param name="e"></param>
-        private void processPackets(object sender, DoWorkEventArgs e)
+        private void listen(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
             ErrorMessage = "";
@@ -129,26 +129,7 @@ namespace PassiveAggressor
             {
                 while (!worker.CancellationPending)
                 {
-                    Packet packet;
-                    // We're only listening during the below function call.  Thus, all of this thread outside of this function call should be as fast as it can be.
-                    PacketCommunicatorReceiveResult result = communicator.ReceivePacket(out packet);
-                    //communicator.ReceiveSomePackets()
-                    switch (result)
-                    {
-                        case PacketCommunicatorReceiveResult.Timeout:
-                            // Timeout elapsed
-                            break;
-                        case PacketCommunicatorReceiveResult.Ok:
-                            // Chuck it in the queue to evaluate on another thread
-                            ObservedHost host = new ObservedHost(packet.Ethernet.Source, packet.Ethernet.IpV4.Source, IpV4Address);
-                            lock (outputQueue)
-                            {
-                                outputQueue.Enqueue(host);
-                            }
-                            break;
-                        default:
-                            throw new InvalidOperationException("The result " + result + " should never be reached here");
-                    }
+                    communicator.ReceivePackets(5, p => processPacket(p));
                 }
             }
             catch (Exception ex)
@@ -159,6 +140,18 @@ namespace PassiveAggressor
             finally
             {
                 StoppedListening();
+            }
+        }
+        /// <summary>
+        /// Callback that incorporates one packet
+        /// </summary>
+        /// <param name="packet"></param>
+        private void processPacket(Packet packet)
+        {
+            ObservedHost host = new ObservedHost(packet.Ethernet.Source, packet.Ethernet.IpV4.Source, IpV4Address);
+            lock (outputQueue)
+            {
+                outputQueue.Enqueue(host);
             }
         }
 

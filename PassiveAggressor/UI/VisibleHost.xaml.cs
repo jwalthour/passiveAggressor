@@ -28,33 +28,35 @@ namespace PassiveAggressor.UI
             InitializeComponent();
         }
 
-        public VisibleHost(MacAddress mac, PcapDotNet.Packets.IpV4.IpV4Address ip)
+        public VisibleHost(Network.ObservedHost host)
         {
             InitializeComponent();
-            labelIpV4Address.Content = ip.ToString();
-            Mac = mac;
+            IpV4Address = host.HostIpV4Address;
+            Mac = host.HostMacAddress;
+            MacInt = Mac.ToValue();
+            labelMacAddress.Text = Mac.ToString();
+            string nickname = NicknameData.instance.GetNicknameForMac(Mac);
+            labelNickname.Text = nickname;
         }
 
         /// <summary>
-        /// Backing variable for the Mac property - use the property instead
-        /// </summary>
-        private MacAddress _mac;
-        /// <summary>
         /// Set will also update the GUI fields that are based on the MAC address
         /// </summary>
-        public MacAddress Mac
+        public MacAddress Mac { get; private set; }
+
+        public ulong MacInt { get; private set; }
+
+        private PcapDotNet.Packets.IpV4.IpV4Address ipV4Address;
+        public PcapDotNet.Packets.IpV4.IpV4Address IpV4Address
         {
-            get { return _mac; }
+            get
+            {
+                return ipV4Address;
+            }
             set
             {
-                _mac = value;
-                labelMacAddress.Content = _mac.ToString();
-                string mfrName = ManufacturerData.instance.GetMfrNameForMac(_mac);
-                labelMfrString.Content = mfrName;
-                string mfrIconResource = ManufacturerData.instance.GetIconResourceNameForMfr(mfrName);
-                imageMfrIcon.Source = LoadImage(mfrIconResource);
-                string nickname = NicknameData.instance.GetNicknameForMac(_mac);
-                labelNickname.Text = nickname;
+                ipV4Address = value;
+                labelIpV4Address.Text = ipV4Address.ToString();
             }
         }
 
@@ -69,36 +71,14 @@ namespace PassiveAggressor.UI
         /// </summary>
         public bool HasNickname { get { return labelNickname.Text.Length > 0; } }
 
-        /// <summary>
-        /// Load an image from the indicated embedded resource
-        /// </summary>
-        /// <param name="resourceName">Path to an embedded PNG resource</param>
-        /// <returns></returns>
-        private ImageSource LoadImage(string resourceName)
-        {
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            BitmapImage bitmap = new BitmapImage();
-
-            using (System.IO.Stream stream =
-                assembly.GetManifestResourceStream(resourceName))
-            {
-                bitmap.BeginInit();
-                bitmap.StreamSource = stream;
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-            }
-
-            return bitmap;
-        }
-
         private void ButtonHttp_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://" + labelIpV4Address.Content + "/");
+            System.Diagnostics.Process.Start("http://" + labelIpV4Address.Text + "/");
         }
 
         private void ButtonHttps_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://" + labelIpV4Address.Content + "/");
+            System.Diagnostics.Process.Start("https://" + labelIpV4Address.Text + "/");
         }
 
         private void ButtonSsh_Click(object sender, RoutedEventArgs e)
@@ -107,7 +87,7 @@ namespace PassiveAggressor.UI
             string puttyPath = myPath + "\\tools\\putty\\putty.exe";
             try
             {
-                System.Diagnostics.Process.Start(puttyPath, (string)labelIpV4Address.Content);
+                System.Diagnostics.Process.Start(puttyPath, (string)labelIpV4Address.Text);
             }
             catch (Exception ex)
             {
@@ -117,12 +97,12 @@ namespace PassiveAggressor.UI
 
         private void ButtonSftp_Click(object sender, RoutedEventArgs e)
         {
-            LaunchFileZilla((string)labelIpV4Address.Content, "sftp");
+            LaunchFileZilla((string)labelIpV4Address.Text, "sftp");
         }
 
         private void ButtonFtp_Click(object sender, RoutedEventArgs e)
         {
-            LaunchFileZilla((string)labelIpV4Address.Content, "sftp");
+            LaunchFileZilla((string)labelIpV4Address.Text, "sftp");
         }
 
         /// <summary>
@@ -192,12 +172,14 @@ namespace PassiveAggressor.UI
 
         private void buttonCopyIpAddress_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetData(DataFormats.Text, labelIpV4Address.Content);
+            Clipboard.SetData(DataFormats.Text, labelIpV4Address.Text);
         }
 
         private void buttonCopyMacAddress_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetData(DataFormats.Text, labelMacAddress.Content);
+            Clipboard.SetData(DataFormats.Text, labelMacAddress.Text);
         }
+
+
     }
 }

@@ -32,7 +32,6 @@ namespace PassiveAggressor.UI
         /// </summary>
         private const string NICK_HDR = "Host nickname string";
 
-
         private static NicknameData _instance = null;
         /// <summary>
         /// Singleton instance of this class.

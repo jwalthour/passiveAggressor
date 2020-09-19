@@ -20,14 +20,14 @@ namespace PassiveAggressor.UI
     /// </summary>
     public partial class NetworkInterface : UserControl
     {
-        private ListeningInterface intf;
+        private Network.ListeningInterface intf;
 
         public NetworkInterface()
         {
             InitializeComponent();
         }
 
-        public NetworkInterface(ListeningInterface intf)
+        public NetworkInterface(Network.ListeningInterface intf)
         {
             this.intf = intf;
             InitializeComponent();
