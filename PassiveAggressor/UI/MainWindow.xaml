@@ -20,7 +20,7 @@
         </ScrollViewer>
         <TextBlock Margin="10,10,10,0" VerticalAlignment="Top" Height="49" TextWrapping="WrapWithOverflow">This tool will passively listen to network traffic, and list hosts detected on the local network.</TextBlock>
         <TextBlock Margin="10,0,10,10" TextWrapping="WrapWithOverflow" Height="49" VerticalAlignment="Bottom"><Run Text="All trademarks herein are © their respective owners.  Passive Agressor is © 2020 John Walthour, available under Apache License 2.0."/></TextBlock>
-        <Label Content="Hosts detected:" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Content="Manufacturers detected (expand for hosts):" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Width="447"/>
         <ScrollViewer Margin="10,90,10,64.4" Background="#FF626262" Grid.Column="0">
             <StackPanel  x:Name="stackInterfaceList">
                 <Label FontStyle="Italic">Initializing interfaces...</Label>

@@ -13,7 +13,19 @@
                     <Label Grid.Column="1" Grid.Row="0" x:Name="labelMfrString" Content="Manufacturer name and host count" VerticalAlignment="Center" />
                 </StackPanel>
             </Expander.Header>
-            <StackPanel Background="#FF626262" x:Name="stackHostList"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="18" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="2,0,0,0" >MAC Address</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="142,0,0,0" >IP Address</TextBlock>
+                <!--<TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,167.4,0" >Nickname</TextBlock>-->
+                <StackPanel Background="#FF626262" x:Name="stackHostList" Grid.Row="1" Grid.Column="0">
+                    <!--<local:VisibleHost/>-->
+                </StackPanel>
+
+            </Grid>
 
         </Expander>
 
