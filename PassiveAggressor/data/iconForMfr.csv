@@ -5,13 +5,17 @@ Acer Inc.,acer.png
 ACER TECHNOLOGIES CORP.,acer.png
 Amazon Technologies Inc.,amazon.png
 "Apple, Inc.",apple.png
-ASUSTek COMPUTER INC,asus.png
+ASUSTek COMPUTER INC.,asus.png
+Belkin International Inc.,belkin.png
+Belkin Corporation,belkin.png
+BELKIN COMPONENTS,belkin.png
 CANON INC.,canon.png
 Canon Imaging Systems Inc.,canon.png
 "Cisco Systems, Inc",cisco.png
 D-Link Corporation,dlink.png
 D-Link International,dlink.png
 Dell Inc.,dell.png
+"Extreme Networks, Inc.",extreme.png
 "Fortinet, Inc.",fortinet.png
 Fortinet Inc.,fortinet.png
 "Google, Inc.",google.png
@@ -22,7 +26,7 @@ Intel Corporate,intel.png
 Liteon Technology Corporation,liteon.png
 Microsoft,microsoft.png
 Microsoft Corporation,microsoft.png
-NATIONAL INSTRUMENTS CORP,ni.png
+NATIONAL INSTRUMENTS CORP.,ni.png
 "Nintendo Co.,Ltd",nintendo.png
 "Nintendo Co., Ltd",nintendo.png
 NVIDIA,nvidia.png
@@ -34,6 +38,7 @@ Raspberry Pi Foundation,raspberry-pi.png
 REALTEK SEMICONDUCTOR CORP.,realtek.png
 Rosewill Inc.,rosewill.png
 "Samsung Electronics Co.,Ltd",samsung.png
+SAMSUNG ELECTRO-MECHANICS(THAILAND),samsung.png
 Sony Mobile Communications Inc,sony.png
 Sony Interactive Entertainment Inc.,sony.png
 Sony Corporation,sony.png
@@ -47,4 +52,5 @@ Texas Instruments,ti.png
 "VMware, Inc.",vmware.png
 WIBRAIN,hardkernel.png
 "Xirrus, Inc.",xirrus.png
+"Xirrus Inc.",xirrus.png
 Xirrus,xirrus.png
