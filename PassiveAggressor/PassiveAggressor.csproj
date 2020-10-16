@@ -186,6 +186,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="data\oui.csv" />
     <EmbeddedResource Include="data\iconForMfr.csv" />
+    <Content Include="data\nicknames.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="PassiveAggressor signing key.pfx" />
     <None Include="Properties\Settings.settings">

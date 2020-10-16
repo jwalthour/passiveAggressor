@@ -16,7 +16,7 @@
         "Entry"
         {
         "MsmKey" = "8:_28A3E722739F5D0A2CCF30E9BDDC88FF"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -40,13 +40,13 @@
         "Entry"
         {
         "MsmKey" = "8:_36A0B7CA603B2EDB37FF0E436571C293"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_5847C8544BF3C8A48B2C75704778C01A"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -58,7 +58,7 @@
         "Entry"
         {
         "MsmKey" = "8:_8A88DF244149D119078D9F8EFA220DA4"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -70,7 +70,7 @@
         "Entry"
         {
         "MsmKey" = "8:_8BC2B396D74E6D322B9E51D7D4D5FBC1"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -81,20 +81,20 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B1CB80FF99803EE46279C4454C975F2B"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_DEDAA8F55AB1E4AB7114E8CB1BBA9F91"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
-        "OwnerKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -106,7 +106,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DF02989301544748AECA97CAFCC69B8D"
+        "OwnerKey" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -163,6 +163,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -179,6 +187,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -493,7 +517,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Passive Aggressor"
         "ProductCode" = "8:{74018B4D-487E-4A3A-BA31-BF30454146AF}"
-        "PackageCode" = "8:{A3E11EBA-FCC3-4A4F-9C60-712BE36D2651}"
+        "PackageCode" = "8:{F8F8CE5D-A4C5-4871-993D-234C52D18DBA}"
         "UpgradeCode" = "8:{AF86A159-633C-41D4-9223-0F62562815C2}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -613,7 +637,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FAB2A1950E814BD9A59A5F7E1757E43A"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_4FC17D17F07B4EB09D930AB1E445CD17"
             {
             "Name" = "8:Passive Aggressor"
             "Arguments" = "8:"
@@ -621,10 +645,10 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_DF02989301544748AECA97CAFCC69B8D"
+            "Target" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
             "Folder" = "8:_AA83C222512549DDA27D2DCA7706FC56"
             "WorkingFolder" = "8:_CF1A0D00F62149C98C75058B1AC0213A"
-            "Icon" = "8:_DF02989301544748AECA97CAFCC69B8D"
+            "Icon" = "8:_9967D1B5F774469CA7E1A8484F73E38C"
             "Feature" = "8:"
             }
         }
@@ -1026,7 +1050,35 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DF02989301544748AECA97CAFCC69B8D"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7D5704E37D594B2E9C7222DB6DE62E2E"
+            {
+            "SourcePath" = "8:"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CF1A0D00F62149C98C75058B1AC0213A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:ContentFiles"
+            "OutputProjectGuid" = "8:{35D72DE5-4B21-434D-9502-86EF07878B56}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9967D1B5F774469CA7E1A8484F73E38C"
             {
             "SourcePath" = "8:..\\PassiveAggressor\\obj\\Release\\PassiveAggressor.exe"
             "TargetName" = "8:"
