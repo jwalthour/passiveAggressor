@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30406.217
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassiveAggressor", "PassiveAggressor\PassiveAggressor.csproj", "{35D72DE5-4B21-434D-9502-86EF07878B56}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Passive Aggressor Installer", "Passive Aggressor Installer\Passive Aggressor Installer.vdproj", "{6FE742F6-6B2E-4E2B-9C37-89D931F905C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,9 @@ Global
 		{35D72DE5-4B21-434D-9502-86EF07878B56}.Debug|x64.Build.0 = Debug|Any CPU
 		{35D72DE5-4B21-434D-9502-86EF07878B56}.Release|x64.ActiveCfg = Release|Any CPU
 		{35D72DE5-4B21-434D-9502-86EF07878B56}.Release|x64.Build.0 = Release|Any CPU
+		{6FE742F6-6B2E-4E2B-9C37-89D931F905C9}.Debug|x64.ActiveCfg = Debug
+		{6FE742F6-6B2E-4E2B-9C37-89D931F905C9}.Release|x64.ActiveCfg = Release
+		{6FE742F6-6B2E-4E2B-9C37-89D931F905C9}.Release|x64.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

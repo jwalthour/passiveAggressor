@@ -244,18 +244,6 @@
     <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Packets.dll" />
     <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Packets.pdb" />
     <Resource Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x64\PcapDotNet.Packets.xml" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Base.dll" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Base.pdb" />
-    <Resource Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Base.xml" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Core.dll" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Core.Extensions.dll" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Core.Extensions.pdb" />
-    <Resource Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Core.Extensions.XML" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Core.pdb" />
-    <Resource Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Core.xml" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Packets.dll" />
-    <Content Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Packets.pdb" />
-    <Resource Include="lib\PcapDotNet.Binaries.1.0.4\PcapDotNet.Binaries.1.0.4.x86\PcapDotNet.Packets.xml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
